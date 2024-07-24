@@ -980,7 +980,7 @@ class DefaultAssetPickerViewerBuilderDelegate
         data: themeData,
         child: Builder(
           builder: (BuildContext context) => Material(
-            color: Colors.transparent,
+            color: Colors.white,
             child: Stack(
               children: <Widget>[
                 Positioned.fill(child: _pageViewBuilder(context)),
@@ -992,7 +992,7 @@ class DefaultAssetPickerViewerBuilderDelegate
                     child: confirmButton(context),
                   ),
                 ] else ...<Widget>[
-                  appBar(context),
+                  // appBar(context),
                   if (selectedAssets != null ||
                       (isWeChatMoment && hasVideo && isAppleOS(context)))
                     bottomDetailBuilder(context),
