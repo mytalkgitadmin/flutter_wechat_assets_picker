@@ -137,7 +137,7 @@ abstract class AssetPickerViewerBuilderDelegate<Asset, Path> {
 
   /// Height for bottom bar widget.
   /// 底栏部件的高度
-  double get bottomBarHeight => 50.0;
+  double get bottomBarHeight => 70.0;
 
   double get bottomDetailHeight => bottomPreviewHeight + bottomBarHeight;
 
@@ -859,7 +859,7 @@ class DefaultAssetPickerViewerBuilderDelegate
                 (isWeChatMoment && hasVideo) || provider!.isSelectedNotEmpty
                     ? 48
                     : 20,
-            height: 32,
+            height: 40,
             padding: const EdgeInsets.symmetric(horizontal: 12),
             color: const Color.fromRGBO(121, 64, 255, 1),
             disabledColor: const Color.fromRGBO(230, 230, 230, 1),
@@ -874,7 +874,7 @@ class DefaultAssetPickerViewerBuilderDelegate
                 fontSize: 18,
                 fontWeight: FontWeight.normal,
               ).copyWith(
-                color: const Color.fromRGBO(221, 221, 221, 1),
+                color: Colors.white,
               ),
             ),
           );
@@ -888,15 +888,21 @@ class DefaultAssetPickerViewerBuilderDelegate
     bool isSelected,
     AssetEntity asset,
   ) {
-    return Checkbox(
-      value: isSelected,
-      activeColor: const Color.fromRGBO(121, 64, 255, 1),
-      checkColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(999999),
+    return Transform.scale(
+      scale: 1.4,
+      child: Checkbox(
+        value: isSelected,
+        activeColor: const Color.fromRGBO(121, 64, 255, 1),
+        checkColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(999999),
+        ),
+        side: MaterialStateBorderSide.resolveWith(
+          (states) => const BorderSide(width: 1.0, color: Colors.black26),
+        ),
+        onChanged: (_) => onChangingSelected(context, asset, isSelected),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
-      onChanged: (_) => onChangingSelected(context, asset, isSelected),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
 
@@ -929,13 +935,18 @@ class DefaultAssetPickerViewerBuilderDelegate
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     _selectButton(context, isSelected, asset),
-                    ScaleText(
-                      textDelegate.select,
-                      style:
-                          const TextStyle(fontSize: 17, height: 1.2).copyWith(
-                        color: Colors.black,
+                    GestureDetector(
+                      onTap: () {
+                        onChangingSelected(context, asset, isSelected);
+                      },
+                      child: ScaleText(
+                        textDelegate.select,
+                        style:
+                            const TextStyle(fontSize: 17, height: 1.2).copyWith(
+                          color: Colors.black,
+                        ),
+                        semanticsLabel: semanticsTextDelegate.select,
                       ),
-                      semanticsLabel: semanticsTextDelegate.select,
                     ),
                   ],
                 ),
