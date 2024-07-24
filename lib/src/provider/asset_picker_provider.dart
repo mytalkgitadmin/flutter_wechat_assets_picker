@@ -9,7 +9,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
-import 'package:wechat_assets_picker/src/widget/toast/asset_toast.dart';
 
 import '../constants/constants.dart';
 import '../delegates/sort_path_delegate.dart';
@@ -239,36 +238,10 @@ abstract class AssetPickerProvider<Asset, Path> extends ChangeNotifier {
 
   /// Select asset.
   /// 选中资源
-  Future<void> selectAsset(Asset item, BuildContext context) async {
-    final AssetEntity entity = item as AssetEntity;
-    final file = await entity.file;
-    if (file != null) {
-      try {
-        final bytes = await file.readAsBytes();
-        if ((bytes.length / 1000000).roundToDouble() >= 200) {
-          // 200 MB 이상의 파일이 1개라도 있는 경우 1회 toast message 노출
-          AssetToast.show(
-            context,
-            message: Singleton
-                .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
-          );
-        } else {
-          if (selectedAssets.length == maxAssets ||
-              selectedAssets.contains(item)) {
-            return;
-          }
-          final List<Asset> set = selectedAssets.toList();
-          set.add(item);
-          selectedAssets = set;
-        }
-      } on OutOfMemoryError catch (_) {
-        AssetToast.show(
-          context,
-          message: Singleton
-              .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
-        );
-      }
-    }
+  Future<void> selectAsset(Asset item) async {
+    final List<Asset> set = selectedAssets.toList();
+    set.add(item);
+    selectedAssets = set;
   }
 
   /// Un-select asset.

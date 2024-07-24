@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:wechat_assets_picker/src/widget/toast/asset_toast.dart';
 import 'package:wechat_picker_library/wechat_picker_library.dart';
 
 import '../constants/constants.dart';
@@ -820,9 +821,41 @@ class DefaultAssetPickerBuilderDelegate
     if (isSingleAssetMode) {
       provider.selectedAssets.clear();
     }
-    provider.selectAsset(asset, context);
-    if (isSingleAssetMode && !isPreviewEnabled) {
-      Navigator.maybeOf(context)?.maybePop(provider.selectedAssets);
+    final AssetEntity entity = asset;
+    final file = await entity.file;
+    if ((entity.width >= 10000 && (entity.width / entity.height) > 3) ||
+        (entity.height >= 10000 && (entity.height / entity.width) > 3)) {
+      // 이미지 길이 또는 높이가 10000 이상이고 비율이 3보다 큰 이미지인 경우 toast message 노출
+      AssetToast.show(
+        context,
+        message: Singleton
+            .textDelegate.semanticsTextDelegate.sOverImageRateToastMessage,
+      );
+      return;
+    }
+    if (file != null) {
+      try {
+        final bytes = await file.readAsBytes();
+        if ((bytes.length / 1000000).roundToDouble() >= 200) {
+          // 200 MB 이상의 파일이 1개라도 있는 경우 1회 toast message 노출
+          AssetToast.show(
+            context,
+            message: Singleton
+                .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
+          );
+        } else {
+          provider.selectAsset(asset);
+          if (isSingleAssetMode && !isPreviewEnabled) {
+            Navigator.maybeOf(context)?.maybePop(provider.selectedAssets);
+          }
+        }
+      } on OutOfMemoryError catch (_) {
+        AssetToast.show(
+          context,
+          message: Singleton
+              .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
+        );
+      }
     }
   }
 
