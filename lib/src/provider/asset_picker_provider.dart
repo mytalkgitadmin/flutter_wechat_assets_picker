@@ -239,7 +239,7 @@ abstract class AssetPickerProvider<Asset, Path> extends ChangeNotifier {
 
   /// Select asset.
   /// 选中资源
-  Future<void> selectAsset(Asset item) async {
+  Future<void> selectAsset(Asset item, BuildContext context) async {
     final AssetEntity entity = item as AssetEntity;
     final file = await entity.file;
     if (file != null) {
@@ -248,6 +248,7 @@ abstract class AssetPickerProvider<Asset, Path> extends ChangeNotifier {
         if ((bytes.length / 1000000).roundToDouble() >= 200) {
           // 200 MB 이상의 파일이 1개라도 있는 경우 1회 toast message 노출
           AssetToast.show(
+            context,
             message: Singleton
                 .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
           );
@@ -262,6 +263,7 @@ abstract class AssetPickerProvider<Asset, Path> extends ChangeNotifier {
         }
       } on OutOfMemoryError catch (_) {
         AssetToast.show(
+          context,
           message: Singleton
               .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
         );

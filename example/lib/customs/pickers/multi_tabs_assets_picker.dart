@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
@@ -320,13 +321,21 @@ class MultiTabAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          pickerViewLayout(context),
-        ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Theme(
+        data: theme,
+        child: Builder(
+          builder: (BuildContext context) => Material(
+            color: Colors.transparent,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                pickerViewLayout(context),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

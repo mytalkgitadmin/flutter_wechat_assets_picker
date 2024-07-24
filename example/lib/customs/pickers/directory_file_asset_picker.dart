@@ -458,7 +458,7 @@ class FileAssetPickerBuilder
       if (isSingleAssetMode) {
         provider.selectedAssets.clear();
       }
-      provider.selectAsset(asset);
+      provider.selectAsset(asset, context);
     }
   }
 
@@ -1078,7 +1078,7 @@ class FileAssetPickerBuilder
                 if (isSingleAssetMode) {
                   provider.selectedAssets.clear();
                 }
-                provider.selectAsset(asset);
+                provider.selectAsset(asset, context);
               }
             },
             child: Container(
@@ -1545,7 +1545,7 @@ class FileAssetPickerViewerBuilderDelegate
                   if (isAppleOS(context)) {
                     return _appleOSSelectButton(isSelected, asset);
                   } else {
-                    return _androidSelectButton(isSelected, asset);
+                    return _androidSelectButton(context, isSelected, asset);
                   }
                 },
               ),
@@ -1599,7 +1599,11 @@ class FileAssetPickerViewerBuilderDelegate
     );
   }
 
-  Widget _androidSelectButton(bool isSelected, File asset) {
+  Widget _androidSelectButton(
+    BuildContext context,
+    bool isSelected,
+    File asset,
+  ) {
     return Checkbox(
       value: isSelected,
       onChanged: (bool? value) {
@@ -1608,7 +1612,7 @@ class FileAssetPickerViewerBuilderDelegate
           selectorProvider?.unSelectAsset(asset);
         } else {
           provider?.selectAsset(asset);
-          selectorProvider?.selectAsset(asset);
+          selectorProvider?.selectAsset(asset, context);
         }
       },
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

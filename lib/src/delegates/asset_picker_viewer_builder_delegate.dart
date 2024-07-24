@@ -263,7 +263,7 @@ abstract class AssetPickerViewerBuilderDelegate<Asset, Path> {
     selectedNotifier.value = selectedCount;
   }
 
-  Future<void> selectAsset(Asset item) async {
+  Future<void> selectAsset(Asset item, BuildContext context) async {
     final AssetEntity entity = item as AssetEntity;
     final file = await entity.file;
     if (file != null) {
@@ -272,6 +272,7 @@ abstract class AssetPickerViewerBuilderDelegate<Asset, Path> {
         if ((bytes.length / 1000000).roundToDouble() >= 200) {
           // 200 MB 이상의 파일이 1개라도 있는 경우 1회 toast message 노출
           AssetToast.show(
+            context,
             message: Singleton
                 .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
           );
@@ -280,7 +281,7 @@ abstract class AssetPickerViewerBuilderDelegate<Asset, Path> {
             return;
           }
           provider?.selectAsset(item);
-          selectorProvider?.selectAsset(item);
+          selectorProvider?.selectAsset(item, context);
           if (!isSelectedPreviewing) {
             selectedAssets?.add(item);
           }
@@ -288,6 +289,7 @@ abstract class AssetPickerViewerBuilderDelegate<Asset, Path> {
         }
       } on OutOfMemoryError catch (_) {
         AssetToast.show(
+          context,
           message: Singleton
               .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
         );
@@ -311,7 +313,7 @@ abstract class AssetPickerViewerBuilderDelegate<Asset, Path> {
     if (isSelected) {
       unSelectAsset(asset);
     } else {
-      selectAsset(asset);
+      selectAsset(asset, context);
     }
     return true;
   }

@@ -820,7 +820,7 @@ class DefaultAssetPickerBuilderDelegate
     if (isSingleAssetMode) {
       provider.selectedAssets.clear();
     }
-    provider.selectAsset(asset);
+    provider.selectAsset(asset, context);
     if (isSingleAssetMode && !isPreviewEnabled) {
       Navigator.maybeOf(context)?.maybePop(provider.selectedAssets);
     }
