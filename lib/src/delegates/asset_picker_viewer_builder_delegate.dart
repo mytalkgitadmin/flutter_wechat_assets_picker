@@ -8,6 +8,7 @@ import 'dart:math' as math;
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 import 'package:provider/provider.dart';
@@ -973,26 +974,31 @@ class DefaultAssetPickerViewerBuilderDelegate
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Positioned.fill(child: _pageViewBuilder(context)),
-          if (isWeChatMoment && hasVideo) ...<Widget>[
-            momentVideoBackButton(context),
-            PositionedDirectional(
-              end: 16,
-              bottom: context.bottomPadding + 16,
-              child: confirmButton(context),
-            ),
-          ] else ...<Widget>[
-            appBar(context),
-            if (selectedAssets != null ||
-                (isWeChatMoment && hasVideo && isAppleOS(context)))
-              bottomDetailBuilder(context),
-          ],
-        ],
+    return Theme(
+      data: themeData,
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: Material(
+          color: Colors.white,
+          child: Stack(
+            children: <Widget>[
+              Positioned.fill(child: _pageViewBuilder(context)),
+              if (isWeChatMoment && hasVideo) ...<Widget>[
+                momentVideoBackButton(context),
+                PositionedDirectional(
+                  end: 16,
+                  bottom: context.bottomPadding + 16,
+                  child: confirmButton(context),
+                ),
+              ] else ...<Widget>[
+                appBar(context),
+                if (selectedAssets != null ||
+                    (isWeChatMoment && hasVideo && isAppleOS(context)))
+                  bottomDetailBuilder(context),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
