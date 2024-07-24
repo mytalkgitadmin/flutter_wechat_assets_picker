@@ -1089,10 +1089,8 @@ class DefaultAssetPickerBuilderDelegate
         PathWrapper<AssetPathEntity>? wrapper,
         _,
       ) {
-        // First, we need the count of the assets.
         int totalCount = wrapper?.assetCount ?? 0;
         final Widget? specialItem;
-        // If user chose a special item's position, add 1 count.
         if (specialItemPosition != SpecialItemPosition.none) {
           specialItem = specialItemBuilder?.call(
             context,
@@ -1108,21 +1106,15 @@ class DefaultAssetPickerBuilderDelegate
         if (totalCount == 0 && specialItem == null) {
           return loadingIndicator(context);
         }
-        // Then we use the [totalCount] to calculate placeholders we need.
+
         final int placeholderCount;
         if (gridRevert && totalCount % gridCount != 0) {
-          // When there are left items that not filled into one row,
-          // filled the row with placeholders.
           placeholderCount = gridCount - totalCount % gridCount;
         } else {
-          // Otherwise, we don't need placeholders.
           placeholderCount = 0;
         }
-        // Calculate rows count.
+
         final int row = (totalCount + placeholderCount) ~/ gridCount;
-        // Here we got a magic calculation. [itemSpacing] needs to be divided by
-        // [gridCount] since every grid item is squeezed by the [itemSpacing],
-        // and it's actual size is reduced with [itemSpacing / gridCount].
         final double dividedSpacing = itemSpacing / gridCount;
         final double topPadding =
             context.topPadding + appBarPreferredSize!.height;
@@ -1167,7 +1159,6 @@ class DefaultAssetPickerBuilderDelegate
                 }
                 return null;
               },
-              // Explicitly disable semantic indexes for custom usage.
               addSemanticIndexes: false,
             ),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -1181,7 +1172,6 @@ class DefaultAssetPickerBuilderDelegate
         return LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
             final double itemSize = constraints.maxWidth / gridCount;
-            // Check whether all rows can be placed at the same time.
             final bool onlyOneScreen = row * itemSize <=
                 constraints.maxHeight -
                     context.bottomPadding -
@@ -1191,13 +1181,9 @@ class DefaultAssetPickerBuilderDelegate
             if (onlyOneScreen) {
               height = constraints.maxHeight;
             } else {
-              // Reduce [permissionLimitedBarHeight] for the final height.
               height = constraints.maxHeight - permissionLimitedBarHeight;
             }
-            // Use [ScrollView.anchor] to determine where is the first place of
-            // the [SliverGrid]. Each row needs [dividedSpacing] to calculate,
-            // then minus one times of [itemSpacing] because spacing's count in the
-            // cross axis is always less than the rows.
+
             final double anchor = math.min(
               (row * (itemSize + dividedSpacing) + topPadding - itemSpacing) /
                   height,
@@ -1206,8 +1192,8 @@ class DefaultAssetPickerBuilderDelegate
 
             return Directionality(
               textDirection: effectiveGridDirection(context),
-              child: ColoredBox(
-                color: theme.canvasColor,
+              child: Container(
+                color: Colors.white,
                 child: Selector<DefaultAssetPickerProvider, List<AssetEntity>>(
                   selector: (_, DefaultAssetPickerProvider p) =>
                       p.currentAssets,
@@ -1221,13 +1207,8 @@ class DefaultAssetPickerBuilderDelegate
                       controller: gridScrollController,
                       anchor: gridRevert ? anchor : 0,
                       center: gridRevert ? gridRevertKey : null,
-                      slivers: <Widget>[
-                        if (isAppleOS(context))
-                          SliverGap.v(
-                            context.topPadding + appBarPreferredSize!.height,
-                          ),
+                      slivers: [
                         sliverGrid(context, assets),
-                        // Ignore the gap when the [anchor] is not equal to 1.
                         if (gridRevert && anchor == 1) bottomGap,
                         if (gridRevert)
                           SliverToBoxAdapter(
@@ -1949,19 +1930,23 @@ class DefaultAssetPickerBuilderDelegate
           decoration: BoxDecoration(
             border: !selected
                 ? Border.all(
-                    color: context.theme.unselectedWidgetColor,
+                    color: const Color.fromRGBO(230, 230, 230, 1),
                     width: indicatorSize / 25,
                   )
                 : null,
-            color: selected ? themeColor : null,
+            color: selected ? const Color.fromRGBO(121, 64, 255, 1) : null,
             shape: BoxShape.circle,
           ),
           child: FittedBox(
             child: AnimatedSwitcher(
               duration: duration,
               reverseDuration: duration,
-              child:
-                  selected ? const Icon(Icons.check) : const SizedBox.shrink(),
+              child: selected
+                  ? const Icon(
+                      Icons.check,
+                      color: Color.fromRGBO(230, 230, 230, 1),
+                    )
+                  : const SizedBox.shrink(),
             ),
           ),
         );
