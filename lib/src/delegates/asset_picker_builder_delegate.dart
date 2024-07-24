@@ -6,7 +6,6 @@ import 'dart:math' as math;
 import 'dart:typed_data' as typed_data;
 import 'dart:ui' as ui;
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
@@ -255,8 +254,7 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
   /// 路径单独条目选择组件
   Widget pathEntityWidget({
     required BuildContext context,
-    required List<PathWrapper<Path>> list,
-    required int index,
+    required PathWrapper<Path> item,
   });
 
   /// A backdrop widget behind the [pathEntityListWidget].
@@ -1091,10 +1089,8 @@ class DefaultAssetPickerBuilderDelegate
         PathWrapper<AssetPathEntity>? wrapper,
         _,
       ) {
-        // First, we need the count of the assets.
         int totalCount = wrapper?.assetCount ?? 0;
         final Widget? specialItem;
-        // If user chose a special item's position, add 1 count.
         if (specialItemPosition != SpecialItemPosition.none) {
           specialItem = specialItemBuilder?.call(
             context,
@@ -1110,21 +1106,15 @@ class DefaultAssetPickerBuilderDelegate
         if (totalCount == 0 && specialItem == null) {
           return loadingIndicator(context);
         }
-        // Then we use the [totalCount] to calculate placeholders we need.
+
         final int placeholderCount;
         if (gridRevert && totalCount % gridCount != 0) {
-          // When there are left items that not filled into one row,
-          // filled the row with placeholders.
           placeholderCount = gridCount - totalCount % gridCount;
         } else {
-          // Otherwise, we don't need placeholders.
           placeholderCount = 0;
         }
-        // Calculate rows count.
+
         final int row = (totalCount + placeholderCount) ~/ gridCount;
-        // Here we got a magic calculation. [itemSpacing] needs to be divided by
-        // [gridCount] since every grid item is squeezed by the [itemSpacing],
-        // and it's actual size is reduced with [itemSpacing / gridCount].
         final double dividedSpacing = itemSpacing / gridCount;
         final double topPadding =
             context.topPadding + appBarPreferredSize!.height;
@@ -1169,7 +1159,6 @@ class DefaultAssetPickerBuilderDelegate
                 }
                 return null;
               },
-              // Explicitly disable semantic indexes for custom usage.
               addSemanticIndexes: false,
             ),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -1183,7 +1172,6 @@ class DefaultAssetPickerBuilderDelegate
         return LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
             final double itemSize = constraints.maxWidth / gridCount;
-            // Check whether all rows can be placed at the same time.
             final bool onlyOneScreen = row * itemSize <=
                 constraints.maxHeight -
                     context.bottomPadding -
@@ -1193,13 +1181,9 @@ class DefaultAssetPickerBuilderDelegate
             if (onlyOneScreen) {
               height = constraints.maxHeight;
             } else {
-              // Reduce [permissionLimitedBarHeight] for the final height.
               height = constraints.maxHeight - permissionLimitedBarHeight;
             }
-            // Use [ScrollView.anchor] to determine where is the first place of
-            // the [SliverGrid]. Each row needs [dividedSpacing] to calculate,
-            // then minus one times of [itemSpacing] because spacing's count in the
-            // cross axis is always less than the rows.
+
             final double anchor = math.min(
               (row * (itemSize + dividedSpacing) + topPadding - itemSpacing) /
                   height,
@@ -1208,8 +1192,8 @@ class DefaultAssetPickerBuilderDelegate
 
             return Directionality(
               textDirection: effectiveGridDirection(context),
-              child: ColoredBox(
-                color: theme.canvasColor,
+              child: Container(
+                color: Colors.white,
                 child: Selector<DefaultAssetPickerProvider, List<AssetEntity>>(
                   selector: (_, DefaultAssetPickerProvider p) =>
                       p.currentAssets,
@@ -1223,13 +1207,8 @@ class DefaultAssetPickerBuilderDelegate
                       controller: gridScrollController,
                       anchor: gridRevert ? anchor : 0,
                       center: gridRevert ? gridRevertKey : null,
-                      slivers: <Widget>[
-                        if (isAppleOS(context))
-                          SliverGap.v(
-                            context.topPadding + appBarPreferredSize!.height,
-                          ),
+                      slivers: [
                         sliverGrid(context, assets),
-                        // Ignore the gap when the [anchor] is not equal to 1.
                         if (gridRevert && anchor == 1) bottomGap,
                         if (gridRevert)
                           SliverToBoxAdapter(
@@ -1523,45 +1502,44 @@ class DefaultAssetPickerBuilderDelegate
   /// 当有资源已选时，点击按钮将把已选资源通过路由返回。
   @override
   Widget confirmButton(BuildContext context) {
-    return Consumer<DefaultAssetPickerProvider>(
+    final Widget button = Consumer<DefaultAssetPickerProvider>(
       builder: (_, DefaultAssetPickerProvider p, __) {
-        final bool isSelectedNotEmpty = p.isSelectedNotEmpty;
-        final bool shouldAllowConfirm =
-            isSelectedNotEmpty || p.previousSelectedAssets.isNotEmpty;
-        return MaterialButton(
-          minWidth: shouldAllowConfirm ? 48 : 20,
-          height: appBarItemHeight,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          color: theme.colorScheme.secondary,
-          disabledColor: theme.splashColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(3),
-          ),
-          onPressed: shouldAllowConfirm
-              ? () {
-                  Navigator.maybeOf(context)?.maybePop(p.selectedAssets);
-                }
-              : null,
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          child: ScaleText(
-            isSelectedNotEmpty && !isSingleAssetMode
-                ? '${textDelegate.confirm}'
-                    ' (${p.selectedAssets.length}/${p.maxAssets})'
-                : textDelegate.confirm,
-            style: TextStyle(
-              color: shouldAllowConfirm
-                  ? theme.textTheme.bodyLarge?.color
-                  : theme.textTheme.bodySmall?.color,
-              fontSize: 17,
-              fontWeight: FontWeight.normal,
+        final active = p.selectedAssets.isNotEmpty;
+        return Container(
+          alignment: Alignment.center,
+          margin: const EdgeInsets.only(right: 12.0),
+          child: InkWell(
+            onTap: () async {
+              if (!active) {
+                return;
+              }
+
+              Navigator.maybeOf(context)?.maybePop(p.selectedAssets);
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                Singleton.textDelegate.semanticsTextDelegate.sDoneButtonText,
+                style: const TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w400,
+                ).copyWith(
+                  color: active
+                      ? const Color.fromRGBO(121, 64, 255, 1)
+                      : const Color.fromRGBO(230, 230, 230, 1),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            semanticsLabel: isSelectedNotEmpty && !isSingleAssetMode
-                ? '${semanticsTextDelegate.confirm}'
-                    ' (${p.selectedAssets.length}/${p.maxAssets})'
-                : semanticsTextDelegate.confirm,
           ),
         );
       },
+    );
+
+    return ChangeNotifierProvider<DefaultAssetPickerProvider>.value(
+      value: provider,
+      builder: (_, __) => button,
     );
   }
 
@@ -1631,11 +1609,10 @@ class DefaultAssetPickerBuilderDelegate
   @override
   Widget pathEntityListWidget(BuildContext context) {
     appBarPreferredSize ??= appBar(context).preferredSize;
-    return Positioned.fill(
-      top: isAppleOS(context)
-          ? context.topPadding + appBarPreferredSize!.height
-          : 0,
-      bottom: null,
+    return Positioned(
+      top: 0,
+      left: 0.0,
+      right: 0.0,
       child: ValueListenableBuilder<bool>(
         valueListenable: isSwitchingPath,
         builder: (_, bool isSwitchingPath, Widget? child) => Semantics(
@@ -1649,90 +1626,45 @@ class DefaultAssetPickerBuilderDelegate
               duration: switchingPathDuration,
               curve: switchingPathCurve,
               opacity: !isAppleOS(context) || isSwitchingPath ? 1 : 0,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(10),
-                ),
-                child: Container(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.sizeOf(context).height *
-                        (isAppleOS(context) ? .6 : .8),
-                  ),
-                  color: theme.colorScheme.background,
-                  child: child,
-                ),
+              child: Container(
+                color: Colors.transparent,
+                child: child,
               ),
             ),
           ),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ValueListenableBuilder<PermissionState>(
-              valueListenable: permission,
-              builder: (_, PermissionState ps, Widget? child) => Semantics(
-                label: '${semanticsTextDelegate.viewingLimitedAssetsTip}, '
-                    '${semanticsTextDelegate.changeAccessibleLimitedAssets}',
-                button: true,
-                onTap: PhotoManager.presentLimited,
-                hidden: !isPermissionLimited,
-                focusable: isPermissionLimited,
-                excludeSemantics: true,
-                child: isPermissionLimited ? child : const SizedBox.shrink(),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-                child: Text.rich(
-                  TextSpan(
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: textDelegate.viewingLimitedAssetsTip,
-                      ),
-                      TextSpan(
-                        text: ' '
-                            '${textDelegate.changeAccessibleLimitedAssets}',
-                        style: TextStyle(color: interactiveTextColor(context)),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = PhotoManager.presentLimited,
-                      ),
-                    ],
-                  ),
-                  style: context.textTheme.bodySmall?.copyWith(fontSize: 14),
+        child: Selector<DefaultAssetPickerProvider,
+            List<PathWrapper<AssetPathEntity>>>(
+          selector: (_, DefaultAssetPickerProvider p) => p.paths,
+          builder: (_, List<PathWrapper<AssetPathEntity>> paths, __) {
+            final List<PathWrapper<AssetPathEntity>> filtered = paths
+                .where(
+                  (PathWrapper<AssetPathEntity> p) => p.assetCount != 0,
+                )
+                .toList();
+
+            return Container(
+              width: double.infinity,
+              color: Colors.white,
+              child: SingleChildScrollView(
+                controller: ScrollController(),
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 12.0,
+                    ),
+                    ...filtered.map((filter) {
+                      return pathEntityWidget(
+                        context: context,
+                        item: filter,
+                      );
+                    }),
+                  ],
                 ),
               ),
-            ),
-            Flexible(
-              child: Selector<DefaultAssetPickerProvider,
-                  List<PathWrapper<AssetPathEntity>>>(
-                selector: (_, DefaultAssetPickerProvider p) => p.paths,
-                builder: (_, List<PathWrapper<AssetPathEntity>> paths, __) {
-                  final List<PathWrapper<AssetPathEntity>> filtered = paths
-                      .where(
-                        (PathWrapper<AssetPathEntity> p) => p.assetCount != 0,
-                      )
-                      .toList();
-                  return ListView.separated(
-                    padding: const EdgeInsetsDirectional.only(top: 1),
-                    shrinkWrap: true,
-                    itemCount: filtered.length,
-                    itemBuilder: (BuildContext c, int i) => pathEntityWidget(
-                      context: c,
-                      list: filtered,
-                      index: i,
-                    ),
-                    separatorBuilder: (_, __) => Container(
-                      margin: const EdgeInsetsDirectional.only(start: 60),
-                      height: 1,
-                      color: theme.canvasColor,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
@@ -1740,83 +1672,49 @@ class DefaultAssetPickerBuilderDelegate
 
   @override
   Widget pathEntitySelector(BuildContext context) {
-    Widget pathText(
-      BuildContext context,
-      String text,
-      String semanticsText,
-    ) {
-      return Flexible(
-        child: ScaleText(
-          text,
-          style: const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.normal,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.fade,
-          maxScaleFactor: 1.2,
-          semanticsLabel: semanticsText,
-        ),
-      );
-    }
+    Widget selector(BuildContext context) {
+      return UnconstrainedBox(
+        child: GestureDetector(
+          onTap: () {
+            Feedback.forTap(context);
+            isSwitchingPath.value = !isSwitchingPath.value;
+          },
+          child: SizedBox(
+            height: appBarItemHeight,
+            child: Selector<DefaultAssetPickerProvider,
+                PathWrapper<AssetPathEntity>?>(
+              selector: (_, DefaultAssetPickerProvider p) => p.currentPath,
+              builder: (_, PathWrapper<AssetPathEntity>? p, Widget? w) {
+                String name = '';
+                if (p != null) {
+                  name = p.path.name;
+                  if (name == 'Recent') {
+                    name = Singleton
+                        .textDelegate.semanticsTextDelegate.sRecentName;
+                  }
+                }
 
-    return UnconstrainedBox(
-      child: GestureDetector(
-        onTap: () {
-          if (isPermissionLimited && provider.isAssetsEmpty) {
-            PhotoManager.presentLimited();
-            return;
-          }
-          if (provider.currentPath == null) {
-            return;
-          }
-          isSwitchingPath.value = !isSwitchingPath.value;
-        },
-        child: Container(
-          height: appBarItemHeight,
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.sizeOf(context).width * 0.5,
-          ),
-          padding: const EdgeInsetsDirectional.only(start: 12, end: 6),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(999),
-            color: theme.focusColor,
-          ),
-          child: Selector<DefaultAssetPickerProvider,
-              PathWrapper<AssetPathEntity>?>(
-            selector: (_, DefaultAssetPickerProvider p) => p.currentPath,
-            builder: (_, PathWrapper<AssetPathEntity>? p, Widget? w) {
-              final AssetPathEntity? path = p?.path;
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  if (path == null && isPermissionLimited)
-                    pathText(
-                      context,
-                      textDelegate.changeAccessibleLimitedAssets,
-                      semanticsTextDelegate.changeAccessibleLimitedAssets,
-                    ),
-                  if (path != null)
-                    pathText(
-                      context,
-                      isPermissionLimited && path.isAll
-                          ? textDelegate.accessiblePathName
-                          : pathNameBuilder?.call(path) ?? path.name,
-                      isPermissionLimited && path.isAll
-                          ? semanticsTextDelegate.accessiblePathName
-                          : pathNameBuilder?.call(path) ?? path.name,
-                    ),
-                  w!,
-                ],
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsetsDirectional.only(start: 5),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: theme.iconTheme.color!.withOpacity(0.5),
-                ),
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (p != null)
+                      Flexible(
+                        child: Text(
+                          name,
+                          style: const TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.normal,
+                          ).copyWith(color: Colors.black),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    w!,
+                  ],
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsetsDirectional.only(start: 5),
                 child: ValueListenableBuilder<bool>(
                   valueListenable: isSwitchingPath,
                   builder: (_, bool isSwitchingPath, Widget? w) {
@@ -1825,41 +1723,58 @@ class DefaultAssetPickerBuilderDelegate
                       child: w,
                     );
                   },
-                  child: Icon(
-                    Icons.keyboard_arrow_down,
-                    size: 20,
-                    color: theme.colorScheme.primary,
+                  child: const Icon(
+                    Icons.arrow_drop_down_sharp,
+                    size: 30.0,
+                    color: Colors.black,
                   ),
                 ),
               ),
             ),
           ),
         ),
-      ),
+      );
+    }
+
+    return ChangeNotifierProvider<DefaultAssetPickerProvider>.value(
+      value: provider,
+      builder: (BuildContext c, _) => selector(c),
     );
   }
 
   @override
   Widget pathEntityWidget({
     required BuildContext context,
-    required List<PathWrapper<AssetPathEntity>> list,
-    required int index,
+    required PathWrapper<AssetPathEntity> item,
   }) {
-    final PathWrapper<AssetPathEntity> wrapper = list[index];
+    final PathWrapper<AssetPathEntity> wrapper = item;
     final AssetPathEntity pathEntity = wrapper.path;
     final typed_data.Uint8List? data = wrapper.thumbnailData;
 
-    Widget builder() {
+    Widget builder({required double size}) {
       if (data != null) {
-        return Image.memory(data, fit: BoxFit.cover);
-      }
-      if (pathEntity.type.containsAudio()) {
-        return ColoredBox(
-          color: theme.colorScheme.primary.withOpacity(0.12),
-          child: const Center(child: Icon(Icons.audiotrack)),
+        return Image.memory(
+          data,
+          height: size,
+          width: size,
+          fit: BoxFit.cover,
         );
       }
-      return ColoredBox(color: theme.colorScheme.primary.withOpacity(0.12));
+      if (pathEntity.type.containsAudio()) {
+        return Container(
+          height: size,
+          width: size,
+          color: theme.colorScheme.primary.withOpacity(0.12),
+          child: const Center(
+            child: Icon(Icons.audiotrack),
+          ),
+        );
+      }
+      return Container(
+        height: size,
+        width: size,
+        color: theme.colorScheme.primary.withOpacity(0.12),
+      );
     }
 
     final String pathName =
@@ -1881,55 +1796,49 @@ class DefaultAssetPickerBuilderDelegate
       selector: (_, DefaultAssetPickerProvider p) => p.currentPath,
       builder: (_, PathWrapper<AssetPathEntity>? currentWrapper, __) {
         final bool isSelected = currentWrapper?.path == pathEntity;
+        String displayName = '';
+        displayName = name;
+        if (name == 'Recent') {
+          displayName =
+              Singleton.textDelegate.semanticsTextDelegate.sRecentName;
+        }
         return Semantics(
           label: labelBuffer.toString(),
           selected: isSelected,
           onTapHint: semanticsTextDelegate.sActionSwitchPathLabel,
           button: false,
-          child: Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              splashFactory: InkSplash.splashFactory,
-              onTap: () {
-                Feedback.forTap(context);
-                context.read<DefaultAssetPickerProvider>().switchPath(wrapper);
-                isSwitchingPath.value = false;
-                gridScrollController.jumpTo(0);
-              },
-              child: SizedBox(
-                height: isAppleOS(context) ? 64 : 52,
-                child: Row(
-                  children: <Widget>[
-                    RepaintBoundary(
-                      child: AspectRatio(aspectRatio: 1, child: builder()),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.only(
-                          start: 15,
-                          end: 20,
-                        ),
-                        child: ExcludeSemantics(
-                          child: ScaleText.rich(
-                            [
-                              TextSpan(text: name),
-                              if (semanticsCount != null)
-                                TextSpan(text: ' ($semanticsCount)'),
-                            ],
-                            style: const TextStyle(fontSize: 17),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+          child: GestureDetector(
+            onTap: () {
+              Feedback.forTap(context);
+              context.read<DefaultAssetPickerProvider>().switchPath(wrapper);
+              isSwitchingPath.value = false;
+              gridScrollController.jumpTo(0);
+            },
+            child: Container(
+              margin:
+                  const EdgeInsets.only(right: 12.0, top: 10.0, bottom: 10.0),
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: builder(size: 72.0),
+                      ),
+                      const SizedBox(height: 8.0),
+                      SizedBox(
+                        width: 72.0,
+                        child: Text(
+                          displayName,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          // color: AppColor.color000,
                         ),
                       ),
-                    ),
-                    if (isSelected)
-                      AspectRatio(
-                        aspectRatio: 1,
-                        child: Icon(Icons.check, color: themeColor, size: 26),
-                      ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
@@ -2021,19 +1930,23 @@ class DefaultAssetPickerBuilderDelegate
           decoration: BoxDecoration(
             border: !selected
                 ? Border.all(
-                    color: context.theme.unselectedWidgetColor,
+                    color: const Color.fromRGBO(230, 230, 230, 1),
                     width: indicatorSize / 25,
                   )
                 : null,
-            color: selected ? themeColor : null,
+            color: selected ? const Color.fromRGBO(121, 64, 255, 1) : null,
             shape: BoxShape.circle,
           ),
           child: FittedBox(
             child: AnimatedSwitcher(
               duration: duration,
               reverseDuration: duration,
-              child:
-                  selected ? const Icon(Icons.check) : const SizedBox.shrink(),
+              child: selected
+                  ? const Icon(
+                      Icons.check,
+                      color: Color.fromRGBO(230, 230, 230, 1),
+                    )
+                  : const SizedBox.shrink(),
             ),
           ),
         );
