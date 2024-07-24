@@ -1628,7 +1628,7 @@ class DefaultAssetPickerBuilderDelegate
               opacity: !isAppleOS(context) || isSwitchingPath ? 1 : 0,
               child: Container(
                 color: Colors.transparent,
-                child: isSwitchingPath ? child : null,
+                child: child,
               ),
             ),
           ),
@@ -1643,27 +1643,29 @@ class DefaultAssetPickerBuilderDelegate
                 )
                 .toList();
 
-            return Container(
-              width: double.infinity,
-              color: Colors.white,
-              child: SingleChildScrollView(
-                controller: ScrollController(),
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    const SizedBox(
-                      width: 12.0,
+            return isSwitchingPath.value
+                ? Container(
+                    width: double.infinity,
+                    color: Colors.white,
+                    child: SingleChildScrollView(
+                      controller: ScrollController(),
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          const SizedBox(
+                            width: 12.0,
+                          ),
+                          ...filtered.map((filter) {
+                            return pathEntityWidget(
+                              context: context,
+                              item: filter,
+                            );
+                          }),
+                        ],
+                      ),
                     ),
-                    ...filtered.map((filter) {
-                      return pathEntityWidget(
-                        context: context,
-                        item: filter,
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            );
+                  )
+                : Container();
           },
         ),
       ),
