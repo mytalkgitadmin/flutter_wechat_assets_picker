@@ -750,20 +750,20 @@ class DefaultAssetPickerViewerBuilderDelegate
   /// 顶栏部件
   Widget appBar(BuildContext context) {
     final bar = AssetPickerAppBar(
-      leading: Semantics(
-        sortKey: ordinalSortKey(0),
-        child: IconButton(
-          onPressed: () {
-            Navigator.maybeOf(context)?.maybePop();
-          },
-          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-          icon: Icon(
-            Icons.close,
-            semanticLabel: MaterialLocalizations.of(context).closeButtonTooltip,
-            color: Colors.black,
-          ),
-        ),
-      ),
+      // leading: Semantics(
+      //   sortKey: ordinalSortKey(0),
+      //   child: IconButton(
+      //     onPressed: () {
+      //       Navigator.maybeOf(context)?.maybePop();
+      //     },
+      //     tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+      //     icon: Icon(
+      //       Icons.close,
+      //       semanticLabel: MaterialLocalizations.of(context).closeButtonTooltip,
+      //       color: Colors.black,
+      //     ),
+      //   ),
+      // ),
       centerTitle: true,
       title: specialPickerType == null
           ? Semantics(
