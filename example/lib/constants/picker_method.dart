@@ -194,7 +194,7 @@ class PickMethod {
                             await p.currentPath!.path.obtainForNewProperties(),
                       ),
                     );
-                    p.selectAsset(result);
+                    p.selectAsset(result, context);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(28.0),
