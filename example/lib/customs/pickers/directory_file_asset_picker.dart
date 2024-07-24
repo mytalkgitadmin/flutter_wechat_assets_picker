@@ -861,8 +861,7 @@ class FileAssetPickerBuilder
             itemCount: paths.length,
             itemBuilder: (_, int index) => pathEntityWidget(
               context: context,
-              list: paths,
-              index: index,
+              item: paths[index],
             ),
             separatorBuilder: (_, __) => Container(
               margin: const EdgeInsetsDirectional.only(start: 60.0),
@@ -945,11 +944,10 @@ class FileAssetPickerBuilder
   @override
   Widget pathEntityWidget({
     required BuildContext context,
-    required List<PathWrapper<Directory>> list,
-    required int index,
+    required PathWrapper<Directory> item,
     bool isAudio = false,
   }) {
-    final PathWrapper<Directory> wrapper = list[index];
+    final PathWrapper<Directory> wrapper = item;
     final Directory path = wrapper.path;
     final typed_data.Uint8List? data = wrapper.thumbnailData;
 

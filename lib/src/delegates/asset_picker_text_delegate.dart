@@ -150,6 +150,13 @@ class AssetPickerTextDelegate {
 
   String get sUnitAssetCountLabel => '数量';
 
+  String get sOver200MBToastMessage =>
+      'The image size is large and cannot be transferred. Please send another image or compress it and send it.';
+
+  String get sRecentName => 'Recent Items';
+
+  String get sDoneButtonText => 'Done';
+
   /// Fallback delegate for semantics determined by platform.
   ///
   /// The purpose of this field is to provide a fallback delegate references
@@ -256,6 +263,16 @@ class EnglishAssetPickerTextDelegate extends AssetPickerTextDelegate {
 
   @override
   String get sUnitAssetCountLabel => 'count';
+
+  @override
+  String get sOver200MBToastMessage =>
+      'The image size is large and cannot be transferred. Please send another image or compress it and send it.';
+
+  @override
+  String get sRecentName => 'Recent Items';
+
+  @override
+  String get sDoneButtonText => 'Done';
 }
 
 /// [AssetPickerTextDelegate] implements with Hebrew.
@@ -1126,4 +1143,13 @@ class KoreanAssetPickerTextDelegate extends AssetPickerTextDelegate {
 
   @override
   String get sUnitAssetCountLabel => '개';
+
+  @override
+  String get sOver200MBToastMessage => '200MB미만 파일만 전송 할 수 있습니다.';
+
+  @override
+  String get sRecentName => '최근항목';
+
+  @override
+  String get sDoneButtonText => '완료';
 }

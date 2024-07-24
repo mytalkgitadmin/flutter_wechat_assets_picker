@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:wechat_assets_picker/src/widget/toast/asset_toast.dart';
 import 'package:wechat_picker_library/wechat_picker_library.dart';
 
 import '../constants/custom_scroll_physics.dart';
@@ -270,16 +271,36 @@ abstract class AssetPickerViewerBuilderDelegate<Asset, Path> {
     selectedNotifier.value = selectedCount;
   }
 
-  void selectAsset(Asset entity) {
-    if (maxAssets != null && selectedCount >= maxAssets!) {
-      return;
+  Future<void> selectAsset(Asset item) async {
+    final AssetEntity entity = item as AssetEntity;
+    final file = await entity.file;
+    if (file != null) {
+      try {
+        final bytes = await file.readAsBytes();
+        if ((bytes.length / 1000000).roundToDouble() >= 200) {
+          // 200 MB 이상의 파일이 1개라도 있는 경우 1회 toast message 노출
+          AssetToast.show(
+            message: Singleton
+                .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
+          );
+        } else {
+          if (maxAssets != null && selectedCount >= maxAssets!) {
+            return;
+          }
+          provider?.selectAsset(item);
+          selectorProvider?.selectAsset(item);
+          if (!isSelectedPreviewing) {
+            selectedAssets?.add(item);
+          }
+          selectedNotifier.value = selectedCount;
+        }
+      } on OutOfMemoryError catch (_) {
+        AssetToast.show(
+          message: Singleton
+              .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
+        );
+      }
     }
-    provider?.selectAsset(entity);
-    selectorProvider?.selectAsset(entity);
-    if (!isSelectedPreviewing) {
-      selectedAssets?.add(entity);
-    }
-    selectedNotifier.value = selectedCount;
   }
 
   Future<bool> onChangingSelected(
