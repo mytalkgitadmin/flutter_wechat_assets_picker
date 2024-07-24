@@ -1643,29 +1643,27 @@ class DefaultAssetPickerBuilderDelegate
                 )
                 .toList();
 
-            return isSwitchingPath.value
-                ? Container(
-                    width: double.infinity,
-                    color: Colors.white,
-                    child: SingleChildScrollView(
-                      controller: ScrollController(),
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          const SizedBox(
-                            width: 12.0,
-                          ),
-                          ...filtered.map((filter) {
-                            return pathEntityWidget(
-                              context: context,
-                              item: filter,
-                            );
-                          }),
-                        ],
-                      ),
+            return Container(
+              width: double.infinity,
+              color: Colors.white,
+              child: SingleChildScrollView(
+                controller: ScrollController(),
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 12.0,
                     ),
-                  )
-                : Container();
+                    ...filtered.map((filter) {
+                      return pathEntityWidget(
+                        context: context,
+                        item: filter,
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            );
           },
         ),
       ),
@@ -1832,10 +1830,12 @@ class DefaultAssetPickerBuilderDelegate
                         width: 72.0,
                         child: Text(
                           displayName,
+                          style: DefaultTextStyle.of(context).style.copyWith(
+                                color: Colors.black,
+                              ),
                           textAlign: TextAlign.center,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          // color: AppColor.color000,
                         ),
                       ),
                     ],
