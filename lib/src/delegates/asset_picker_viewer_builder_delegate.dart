@@ -8,21 +8,14 @@ import 'dart:math' as math;
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import 'package:photo_manager/photo_manager.dart';
-import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/src/widget/toast/asset_toast.dart';
 import 'package:wechat_picker_library/wechat_picker_library.dart';
 
+import '../../wechat_assets_picker.dart';
 import '../constants/custom_scroll_physics.dart';
-import '../constants/enums.dart';
-import '../constants/typedefs.dart';
-import '../delegates/asset_picker_text_delegate.dart';
 import '../internals/singleton.dart';
-import '../provider/asset_picker_provider.dart';
-import '../provider/asset_picker_viewer_provider.dart';
-import '../widget/asset_picker_app_bar.dart';
-import '../widget/asset_picker_viewer.dart';
 import '../widget/builder/audio_page_builder.dart';
 import '../widget/builder/fade_image_builder.dart';
 import '../widget/builder/image_page_builder.dart';
@@ -144,7 +137,7 @@ abstract class AssetPickerViewerBuilderDelegate<Asset, Path> {
 
   /// Height for bottom bar widget.
   /// 底栏部件的高度
-  double get bottomBarHeight => 50.0;
+  double get bottomBarHeight => 70.0;
 
   double get bottomDetailHeight => bottomPreviewHeight + bottomBarHeight;
 
@@ -750,6 +743,7 @@ class DefaultAssetPickerViewerBuilderDelegate
   Widget appBar(BuildContext context) {
     final bar = AssetPickerAppBar(
       backgroundColor: Colors.white,
+      height: 52,
       leading: Semantics(
         sortKey: ordinalSortKey(0),
         child: IconButton(
@@ -865,7 +859,7 @@ class DefaultAssetPickerViewerBuilderDelegate
                 (isWeChatMoment && hasVideo) || provider!.isSelectedNotEmpty
                     ? 48
                     : 20,
-            height: 32,
+            height: 40,
             padding: const EdgeInsets.symmetric(horizontal: 12),
             color: const Color.fromRGBO(121, 64, 255, 1),
             disabledColor: const Color.fromRGBO(230, 230, 230, 1),
@@ -880,7 +874,7 @@ class DefaultAssetPickerViewerBuilderDelegate
                 fontSize: 18,
                 fontWeight: FontWeight.normal,
               ).copyWith(
-                color: const Color.fromRGBO(221, 221, 221, 1),
+                color: Colors.white,
               ),
             ),
           );
@@ -894,15 +888,21 @@ class DefaultAssetPickerViewerBuilderDelegate
     bool isSelected,
     AssetEntity asset,
   ) {
-    return Checkbox(
-      value: isSelected,
-      activeColor: const Color.fromRGBO(121, 64, 255, 1),
-      checkColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(999999),
+    return Transform.scale(
+      scale: 1.4,
+      child: Checkbox(
+        value: isSelected,
+        activeColor: const Color.fromRGBO(121, 64, 255, 1),
+        checkColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(999999),
+        ),
+        side: MaterialStateBorderSide.resolveWith(
+          (states) => const BorderSide(width: 1.0, color: Colors.black26),
+        ),
+        onChanged: (_) => onChangingSelected(context, asset, isSelected),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
-      onChanged: (_) => onChangingSelected(context, asset, isSelected),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
 
@@ -935,13 +935,18 @@ class DefaultAssetPickerViewerBuilderDelegate
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     _selectButton(context, isSelected, asset),
-                    ScaleText(
-                      textDelegate.select,
-                      style:
-                          const TextStyle(fontSize: 17, height: 1.2).copyWith(
-                        color: Colors.black,
+                    GestureDetector(
+                      onTap: () {
+                        onChangingSelected(context, asset, isSelected);
+                      },
+                      child: ScaleText(
+                        textDelegate.select,
+                        style:
+                            const TextStyle(fontSize: 17, height: 1.2).copyWith(
+                          color: Colors.black,
+                        ),
+                        semanticsLabel: semanticsTextDelegate.select,
                       ),
-                      semanticsLabel: semanticsTextDelegate.select,
                     ),
                   ],
                 ),
@@ -973,26 +978,33 @@ class DefaultAssetPickerViewerBuilderDelegate
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Positioned.fill(child: _pageViewBuilder(context)),
-          if (isWeChatMoment && hasVideo) ...<Widget>[
-            momentVideoBackButton(context),
-            PositionedDirectional(
-              end: 16,
-              bottom: context.bottomPadding + 16,
-              child: confirmButton(context),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Theme(
+        data: AssetPicker.themeData(Colors.white),
+        child: Builder(
+          builder: (BuildContext context) => Material(
+            color: Colors.white,
+            child: Stack(
+              children: <Widget>[
+                Positioned.fill(child: _pageViewBuilder(context)),
+                if (isWeChatMoment && hasVideo) ...<Widget>[
+                  momentVideoBackButton(context),
+                  PositionedDirectional(
+                    end: 16,
+                    bottom: context.bottomPadding + 16,
+                    child: confirmButton(context),
+                  ),
+                ] else ...<Widget>[
+                  appBar(context),
+                  if (selectedAssets != null ||
+                      (isWeChatMoment && hasVideo && isAppleOS(context)))
+                    bottomDetailBuilder(context),
+                ],
+              ],
             ),
-          ] else ...<Widget>[
-            appBar(context),
-            if (selectedAssets != null ||
-                (isWeChatMoment && hasVideo && isAppleOS(context)))
-              bottomDetailBuilder(context),
-          ],
-        ],
+          ),
+        ),
       ),
     );
   }

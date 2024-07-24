@@ -1830,10 +1830,12 @@ class DefaultAssetPickerBuilderDelegate
                         width: 72.0,
                         child: Text(
                           displayName,
+                          style: DefaultTextStyle.of(context).style.copyWith(
+                                color: Colors.black,
+                              ),
                           textAlign: TextAlign.center,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          // color: AppColor.color000,
                         ),
                       ),
                     ],
