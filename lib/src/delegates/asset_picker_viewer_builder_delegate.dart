@@ -979,7 +979,7 @@ class DefaultAssetPickerViewerBuilderDelegate
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: Material(
-          color: Colors.white,
+          color: themeData.scaffoldBackgroundColor,
           child: Stack(
             children: <Widget>[
               Positioned.fill(child: _pageViewBuilder(context)),
