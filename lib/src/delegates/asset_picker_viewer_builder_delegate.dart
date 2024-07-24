@@ -267,6 +267,17 @@ abstract class AssetPickerViewerBuilderDelegate<Asset, Path> {
     final AssetEntity entity = item as AssetEntity;
     final file = await entity.file;
     if (file != null) {
+      if ((entity.width >= 10000 && (entity.width / entity.height) > 3) ||
+          (entity.height >= 10000 && (entity.height / entity.width) > 3)) {
+        // 이미지 길이 또는 높이가 10000 이상이고 비율이 3보다 큰 이미지인 경우 toast message 노출
+        AssetToast.show(
+          context,
+          message: Singleton
+              .textDelegate.semanticsTextDelegate.sOverImageRateToastMessage,
+        );
+        return;
+      }
+
       try {
         final bytes = await file.readAsBytes();
         if ((bytes.length / 1000000).roundToDouble() >= 200) {
@@ -281,7 +292,7 @@ abstract class AssetPickerViewerBuilderDelegate<Asset, Path> {
             return;
           }
           provider?.selectAsset(item);
-          selectorProvider?.selectAsset(item, context);
+          selectorProvider?.selectAsset(item);
           if (!isSelectedPreviewing) {
             selectedAssets?.add(item);
           }

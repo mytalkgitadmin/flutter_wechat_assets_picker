@@ -151,6 +151,9 @@ class AssetPickerTextDelegate {
   String get sUnitAssetCountLabel => '数量';
 
   String get sOver200MBToastMessage =>
+      'You can only send files smaller than 200MB.';
+
+  String get sOverImageRateToastMessage =>
       'The image size is large and cannot be transferred. Please send another image or compress it and send it.';
 
   String get sRecentName => 'Recent Items';
@@ -266,6 +269,10 @@ class EnglishAssetPickerTextDelegate extends AssetPickerTextDelegate {
 
   @override
   String get sOver200MBToastMessage =>
+      'You can only send files smaller than 200MB.';
+
+  @override
+  String get sOverImageRateToastMessage =>
       'The image size is large and cannot be transferred. Please send another image or compress it and send it.';
 
   @override
@@ -1146,6 +1153,10 @@ class KoreanAssetPickerTextDelegate extends AssetPickerTextDelegate {
 
   @override
   String get sOver200MBToastMessage => '200MB미만 파일만 전송 할 수 있습니다.';
+
+  @override
+  String get sOverImageRateToastMessage =>
+      '이미지 사이즈가 커서 전송할 수 없습니다. 다른 이미지 또는 압축 후 전송해 주세요.';
 
   @override
   String get sRecentName => '최근항목';
