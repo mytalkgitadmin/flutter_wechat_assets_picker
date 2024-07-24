@@ -286,7 +286,7 @@ class MultiTabAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
                     RepaintBoundary(
                       child: Column(
                         children: <Widget>[
-                          Expanded(child: assetsGridBuilder(context)),
+                          Expanded(child: assetsGridBuilder(context, true)),
                           if (isPreviewEnabled) bottomActionBar(context),
                         ],
                       ),

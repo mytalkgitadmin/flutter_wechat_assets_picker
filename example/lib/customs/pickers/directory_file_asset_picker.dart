@@ -458,7 +458,7 @@ class FileAssetPickerBuilder
       if (isSingleAssetMode) {
         provider.selectedAssets.clear();
       }
-      provider.selectAsset(asset, context);
+      provider.selectAsset(asset);
     }
   }
 
@@ -1078,7 +1078,7 @@ class FileAssetPickerBuilder
                 if (isSingleAssetMode) {
                   provider.selectedAssets.clear();
                 }
-                provider.selectAsset(asset, context);
+                provider.selectAsset(asset);
               }
             },
             child: Container(
@@ -1612,7 +1612,7 @@ class FileAssetPickerViewerBuilderDelegate
           selectorProvider?.unSelectAsset(asset);
         } else {
           provider?.selectAsset(asset);
-          selectorProvider?.selectAsset(asset, context);
+          selectorProvider?.selectAsset(asset);
         }
       },
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
