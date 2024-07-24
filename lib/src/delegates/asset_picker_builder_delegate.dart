@@ -1628,7 +1628,7 @@ class DefaultAssetPickerBuilderDelegate
               opacity: !isAppleOS(context) || isSwitchingPath ? 1 : 0,
               child: Container(
                 color: Colors.transparent,
-                child: child,
+                child: isSwitchingPath ? child : null,
               ),
             ),
           ),
