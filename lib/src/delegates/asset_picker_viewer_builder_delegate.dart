@@ -750,7 +750,6 @@ class DefaultAssetPickerViewerBuilderDelegate
   /// 顶栏部件
   Widget appBar(BuildContext context) {
     final bar = AssetPickerAppBar(
-      backgroundColor: Colors.white,
       leading: Semantics(
         sortKey: ordinalSortKey(0),
         child: IconButton(
