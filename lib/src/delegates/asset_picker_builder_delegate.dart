@@ -295,6 +295,7 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
     BuildContext context,
     int index,
     Asset asset,
+    bool isMultipleSelection,
   );
 
   /// Indicator for assets selected status.
@@ -1365,7 +1366,12 @@ class DefaultAssetPickerBuilderDelegate
       key: ValueKey<String>(asset.id),
       children: <Widget>[
         builder,
-        if (isMultipleSelection) selectedBackdrop(context, currentIndex, asset),
+        selectedBackdrop(
+          context,
+          currentIndex,
+          asset,
+          isMultipleSelection,
+        ),
         if (!isWeChatMoment || asset.type != AssetType.video)
           selectIndicator(context, index, asset, isMultipleSelection),
         if (isMultipleSelection) itemBannedIndicator(context, asset),
@@ -2076,14 +2082,34 @@ class DefaultAssetPickerBuilderDelegate
   }
 
   @override
-  Widget selectedBackdrop(BuildContext context, int index, AssetEntity asset) {
+  Widget selectedBackdrop(
+    BuildContext context,
+    int index,
+    AssetEntity asset,
+    bool isMultipleSelection,
+  ) {
     final double indicatorSize =
         MediaQuery.sizeOf(context).width / gridCount / 3;
     return Positioned.fill(
       child: GestureDetector(
         onTap: isPreviewEnabled
             ? () {
-                viewAsset(context, index, asset);
+                if (isMultipleSelection) {
+                  viewAsset(context, index, asset);
+                } else {
+                  final DefaultAssetPickerProvider p =
+                      context.read<DefaultAssetPickerProvider>();
+                  final selected = p.selectedAssets
+                      .where((selectAssert) => selectAssert == asset)
+                      .isNotEmpty;
+                  selectAsset(
+                    context,
+                    asset,
+                    index,
+                    selected,
+                    isMultipleSelection,
+                  );
+                }
               }
             : null,
         child: Consumer<DefaultAssetPickerProvider>(
@@ -2093,10 +2119,10 @@ class DefaultAssetPickerBuilderDelegate
             return AnimatedContainer(
               duration: switchingPathDuration,
               padding: EdgeInsets.all(indicatorSize * .35),
-              color: selected
+              color: isMultipleSelection && selected
                   ? theme.colorScheme.primary.withOpacity(.45)
                   : theme.colorScheme.background.withOpacity(.1),
-              child: selected && !isSingleAssetMode
+              child: isMultipleSelection && selected && !isSingleAssetMode
                   ? Align(
                       alignment: AlignmentDirectional.topStart,
                       child: SizedBox(

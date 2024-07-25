@@ -780,7 +780,12 @@ class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
   }
 
   @override
-  Widget selectedBackdrop(BuildContext context, int index, AssetEntity asset) =>
+  Widget selectedBackdrop(
+    BuildContext context,
+    int index,
+    AssetEntity asset,
+    bool isMultipleSelection,
+  ) =>
       const SizedBox.shrink();
 }
 

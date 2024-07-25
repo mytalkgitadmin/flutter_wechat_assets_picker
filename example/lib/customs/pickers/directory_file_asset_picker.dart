@@ -1155,7 +1155,12 @@ class FileAssetPickerBuilder
   }
 
   @override
-  Widget selectedBackdrop(BuildContext context, int index, File asset) {
+  Widget selectedBackdrop(
+    BuildContext context,
+    int index,
+    File asset,
+    bool isMultipleSelection,
+  ) {
     return Selector<FileAssetPickerProvider, List<File>>(
       selector: (_, FileAssetPickerProvider p) => p.selectedAssets,
       builder: (_, List<File> selectedAssets, __) {
