@@ -825,16 +825,6 @@ class DefaultAssetPickerBuilderDelegate
     final DefaultAssetPickerProvider provider =
         context.read<DefaultAssetPickerProvider>();
 
-    if (false == isMultipleSelection) {
-      final DefaultAssetPickerProvider p =
-          context.read<DefaultAssetPickerProvider>();
-      if (p.selectedAssets.isNotEmpty) {
-        for (final asset in p.selectedAssets) {
-          provider.unSelectAsset(asset);
-        }
-      }
-    }
-
     final bool? selectPredicateResult = await selectPredicate?.call(
       context,
       asset,
@@ -847,7 +837,7 @@ class DefaultAssetPickerBuilderDelegate
       provider.unSelectAsset(asset);
       return;
     }
-    if (isSingleAssetMode) {
+    if (false == isMultipleSelection) {
       provider.selectedAssets.clear();
     }
     final AssetEntity entity = asset;
