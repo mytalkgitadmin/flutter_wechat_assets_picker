@@ -451,19 +451,28 @@ class FileAssetPickerBuilder
   }
 
   @override
-  void selectAsset(BuildContext context, File asset, int index, bool selected) {
+  void selectAsset(
+    BuildContext context,
+    File asset,
+    int index,
+    bool selected,
+    bool isMultipleSelection,
+  ) {
     if (selected) {
       provider.unSelectAsset(asset);
     } else {
       if (isSingleAssetMode) {
         provider.selectedAssets.clear();
       }
-      provider.selectAsset(asset, context);
+      provider.selectAsset(asset);
     }
   }
 
   @override
-  Widget androidLayout(BuildContext context) {
+  Widget androidLayout(
+    BuildContext context,
+    bool isMultipleSelection,
+  ) {
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -484,7 +493,9 @@ class FileAssetPickerBuilder
                             RepaintBoundary(
                               child: Column(
                                 children: <Widget>[
-                                  Expanded(child: assetsGridBuilder(context)),
+                                  Expanded(
+                                      child: assetsGridBuilder(
+                                          context, isMultipleSelection)),
                                   if (!isAppleOS(context))
                                     bottomActionBar(context),
                                 ],
@@ -519,7 +530,10 @@ class FileAssetPickerBuilder
   }
 
   @override
-  Widget appleOSLayout(BuildContext context) {
+  Widget appleOSLayout(
+    BuildContext context,
+    bool isMultipleSelection,
+  ) {
     return Stack(
       children: <Widget>[
         Positioned.fill(
@@ -535,7 +549,8 @@ class FileAssetPickerBuilder
                             child: Stack(
                               children: <Widget>[
                                 Positioned.fill(
-                                  child: assetsGridBuilder(context),
+                                  child: assetsGridBuilder(
+                                      context, isMultipleSelection),
                                 ),
                                 if (!isSingleAssetMode || isAppleOS(context))
                                   PositionedDirectional(
@@ -583,7 +598,10 @@ class FileAssetPickerBuilder
   }
 
   @override
-  Widget assetsGridBuilder(BuildContext context) {
+  Widget assetsGridBuilder(
+    BuildContext context,
+    bool isMultipleSelection,
+  ) {
     appBarPreferredSize ??= appBar(context).preferredSize;
     int totalCount = provider.currentAssets.length;
     if (specialItemPosition != SpecialItemPosition.none) {
@@ -613,7 +631,7 @@ class FileAssetPickerBuilder
               }
               return Directionality(
                 textDirection: Directionality.of(context),
-                child: assetGridItemBuilder(c, index, assets),
+                child: assetGridItemBuilder(c, index, assets, true),
               );
             },
           ),
@@ -702,6 +720,7 @@ class FileAssetPickerBuilder
     BuildContext context,
     int index,
     List<File> currentAssets,
+    bool isMultipleSelection,
   ) {
     final int currentIndex = switch (specialItemPosition) {
       SpecialItemPosition.none || SpecialItemPosition.append => index,
@@ -718,7 +737,7 @@ class FileAssetPickerBuilder
       fit: StackFit.expand,
       children: <Widget>[
         Positioned.fill(child: builder),
-        selectIndicator(context, index, asset),
+        selectIndicator(context, index, asset, isMultipleSelection),
       ],
     );
   }
@@ -728,6 +747,7 @@ class FileAssetPickerBuilder
     BuildContext context,
     int index,
     File asset,
+    bool isMultipleSelection,
     Widget child,
   ) {
     return Semantics(child: child);
@@ -1058,7 +1078,12 @@ class FileAssetPickerBuilder
   }
 
   @override
-  Widget selectIndicator(BuildContext context, int index, File asset) {
+  Widget selectIndicator(
+    BuildContext context,
+    int index,
+    File asset,
+    bool isMultipleSelection,
+  ) {
     return Selector<FileAssetPickerProvider, List<File>>(
       selector: (_, FileAssetPickerProvider p) => p.selectedAssets,
       builder: (_, List<File> selectedAssets, __) {
@@ -1078,7 +1103,7 @@ class FileAssetPickerBuilder
                 if (isSingleAssetMode) {
                   provider.selectedAssets.clear();
                 }
-                provider.selectAsset(asset, context);
+                provider.selectAsset(asset);
               }
             },
             child: Container(
@@ -1130,7 +1155,12 @@ class FileAssetPickerBuilder
   }
 
   @override
-  Widget selectedBackdrop(BuildContext context, int index, File asset) {
+  Widget selectedBackdrop(
+    BuildContext context,
+    int index,
+    File asset,
+    bool isMultipleSelection,
+  ) {
     return Selector<FileAssetPickerProvider, List<File>>(
       selector: (_, FileAssetPickerProvider p) => p.selectedAssets,
       builder: (_, List<File> selectedAssets, __) {
@@ -1187,7 +1217,16 @@ class FileAssetPickerBuilder
             child: Stack(
               fit: StackFit.expand,
               children: <Widget>[
-                if (isAppleOS(context)) appleOSLayout(c) else androidLayout(c),
+                if (isAppleOS(context))
+                  appleOSLayout(
+                    c,
+                    true,
+                  )
+                else
+                  androidLayout(
+                    c,
+                    true,
+                  ),
                 permissionOverlay(c),
               ],
             ),
@@ -1612,7 +1651,7 @@ class FileAssetPickerViewerBuilderDelegate
           selectorProvider?.unSelectAsset(asset);
         } else {
           provider?.selectAsset(asset);
-          selectorProvider?.selectAsset(asset, context);
+          selectorProvider?.selectAsset(asset);
         }
       },
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

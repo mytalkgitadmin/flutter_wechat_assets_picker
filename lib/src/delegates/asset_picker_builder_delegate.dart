@@ -233,7 +233,13 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
   /// to involve with predications, callbacks, etc.
   /// 选择资源的方法。自定义的 delegate 可以通过实现该方法，整合判断、回调等操作。
   @protected
-  void selectAsset(BuildContext context, Asset asset, int index, bool selected);
+  void selectAsset(
+    BuildContext context,
+    Asset asset,
+    int index,
+    bool selected,
+    bool isMultipleSelection,
+  );
 
   /// Called when assets changed and obtained notifications from the OS.
   /// 系统发出资源变更的通知时调用的方法
@@ -289,15 +295,24 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
     BuildContext context,
     int index,
     Asset asset,
+    bool isMultipleSelection,
   );
 
   /// Indicator for assets selected status.
   /// 资源是否已选的指示器
-  Widget selectIndicator(BuildContext context, int index, Asset asset);
+  Widget selectIndicator(
+    BuildContext context,
+    int index,
+    Asset asset,
+    bool isMultipleSelection,
+  );
 
   /// The main grid view builder for assets.
   /// 主要的资源查看网格部件
-  Widget assetsGridBuilder(BuildContext context);
+  Widget assetsGridBuilder(
+    BuildContext context,
+    bool isMultipleSelection,
+  );
 
   /// Indicates how would the grid found a reusable [RenderObject] through [id].
   /// 为 Grid 布局指示如何找到可复用的 [RenderObject]。
@@ -325,6 +340,7 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
     BuildContext context,
     int index,
     List<Asset> currentAssets,
+    bool isMultipleSelection,
   );
 
   /// The [Semantics] builder for the assets' grid.
@@ -333,6 +349,7 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
     BuildContext context,
     int index,
     Asset asset,
+    bool isMultipleSelection,
     Widget child,
   );
 
@@ -369,11 +386,11 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
 
   /// Layout for Apple OS devices.
   /// 苹果系列设备的选择器布局
-  Widget appleOSLayout(BuildContext context);
+  Widget appleOSLayout(BuildContext context, bool isMultipleSelection);
 
   /// Layout for Android devices.
   /// Android设备的选择器布局
-  Widget androidLayout(BuildContext context);
+  Widget androidLayout(BuildContext context, bool isMultipleSelection);
 
   /// Loading indicator.
   /// 加载指示器
@@ -803,7 +820,11 @@ class DefaultAssetPickerBuilderDelegate
     AssetEntity asset,
     int index,
     bool selected,
+    bool isMultipleSelection,
   ) async {
+    final DefaultAssetPickerProvider provider =
+        context.read<DefaultAssetPickerProvider>();
+
     final bool? selectPredicateResult = await selectPredicate?.call(
       context,
       asset,
@@ -812,13 +833,11 @@ class DefaultAssetPickerBuilderDelegate
     if (selectPredicateResult == false) {
       return;
     }
-    final DefaultAssetPickerProvider provider =
-        context.read<DefaultAssetPickerProvider>();
     if (selected) {
       provider.unSelectAsset(asset);
       return;
     }
-    if (isSingleAssetMode) {
+    if (false == isMultipleSelection) {
       provider.selectedAssets.clear();
     }
     final AssetEntity entity = asset;
@@ -998,7 +1017,7 @@ class DefaultAssetPickerBuilderDelegate
   }
 
   @override
-  Widget androidLayout(BuildContext context) {
+  Widget androidLayout(BuildContext context, bool isMultipleSelection) {
     return AssetPickerAppBarWrapper(
       appBar: appBar(context),
       body: Consumer<DefaultAssetPickerProvider>(
@@ -1013,7 +1032,12 @@ class DefaultAssetPickerBuilderDelegate
                       RepaintBoundary(
                         child: Column(
                           children: <Widget>[
-                            Expanded(child: assetsGridBuilder(context)),
+                            Expanded(
+                              child: assetsGridBuilder(
+                                context,
+                                isMultipleSelection,
+                              ),
+                            ),
                             if (isPreviewEnabled || !isSingleAssetMode)
                               bottomActionBar(context),
                           ],
@@ -1031,7 +1055,7 @@ class DefaultAssetPickerBuilderDelegate
   }
 
   @override
-  Widget appleOSLayout(BuildContext context) {
+  Widget appleOSLayout(BuildContext context, bool isMultipleSelection) {
     Widget gridLayout(BuildContext context) {
       return ValueListenableBuilder<bool>(
         valueListenable: isSwitchingPath,
@@ -1040,7 +1064,8 @@ class DefaultAssetPickerBuilderDelegate
           child: RepaintBoundary(
             child: Stack(
               children: <Widget>[
-                Positioned.fill(child: assetsGridBuilder(context)),
+                Positioned.fill(
+                    child: assetsGridBuilder(context, isMultipleSelection)),
                 if (isPreviewEnabled || !isSingleAssetMode)
                   Positioned.fill(top: null, child: bottomActionBar(context)),
               ],
@@ -1112,7 +1137,10 @@ class DefaultAssetPickerBuilderDelegate
   }
 
   @override
-  Widget assetsGridBuilder(BuildContext context) {
+  Widget assetsGridBuilder(
+    BuildContext context,
+    bool isMultipleSelection,
+  ) {
     appBarPreferredSize ??= appBar(context).preferredSize;
     final bool gridRevert = effectiveShouldRevertGrid(context);
     return Selector<DefaultAssetPickerProvider, PathWrapper<AssetPathEntity>?>(
@@ -1170,6 +1198,7 @@ class DefaultAssetPickerBuilderDelegate
                         context,
                         index,
                         assets,
+                        isMultipleSelection,
                         specialItem: specialItem,
                       ),
                     ),
@@ -1278,7 +1307,8 @@ class DefaultAssetPickerBuilderDelegate
   Widget assetGridItemBuilder(
     BuildContext context,
     int index,
-    List<AssetEntity> currentAssets, {
+    List<AssetEntity> currentAssets,
+    bool isMultipleSelection, {
     Widget? specialItem,
   }) {
     final DefaultAssetPickerProvider p =
@@ -1326,13 +1356,24 @@ class DefaultAssetPickerBuilderDelegate
       key: ValueKey<String>(asset.id),
       children: <Widget>[
         builder,
-        selectedBackdrop(context, currentIndex, asset),
+        selectedBackdrop(
+          context,
+          currentIndex,
+          asset,
+          isMultipleSelection,
+        ),
         if (!isWeChatMoment || asset.type != AssetType.video)
-          selectIndicator(context, index, asset),
-        itemBannedIndicator(context, asset),
+          selectIndicator(context, index, asset, isMultipleSelection),
+        if (isMultipleSelection) itemBannedIndicator(context, asset),
       ],
     );
-    return assetGridItemSemanticsBuilder(context, index, asset, content);
+    return assetGridItemSemanticsBuilder(
+      context,
+      index,
+      asset,
+      isMultipleSelection,
+      content,
+    );
   }
 
   int semanticIndex(int index) {
@@ -1347,6 +1388,7 @@ class DefaultAssetPickerBuilderDelegate
     BuildContext context,
     int index,
     AssetEntity asset,
+    bool isMultipleSelection,
     Widget child,
   ) {
     return ValueListenableBuilder<bool>(
@@ -1387,7 +1429,13 @@ class DefaultAssetPickerBuilderDelegate
               image: asset.type == AssetType.image ||
                   asset.type == AssetType.video,
               onTap: () {
-                selectAsset(context, asset, index, isSelected);
+                selectAsset(
+                  context,
+                  asset,
+                  index,
+                  isSelected,
+                  isMultipleSelection,
+                );
               },
               onTapHint: semanticsTextDelegate.sActionSelectHint,
               onLongPress: isPreviewEnabled
@@ -1949,7 +1997,12 @@ class DefaultAssetPickerBuilderDelegate
   }
 
   @override
-  Widget selectIndicator(BuildContext context, int index, AssetEntity asset) {
+  Widget selectIndicator(
+    BuildContext context,
+    int index,
+    AssetEntity asset,
+    bool isMultipleSelection,
+  ) {
     final double indicatorSize =
         MediaQuery.sizeOf(context).width / gridCount / 3;
     final Duration duration = switchingPathDuration * 0.75;
@@ -1988,7 +2041,13 @@ class DefaultAssetPickerBuilderDelegate
         final Widget selectorWidget = GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {
-            selectAsset(context, asset, index, selected);
+            selectAsset(
+              context,
+              asset,
+              index,
+              selected,
+              isMultipleSelection,
+            );
           },
           child: Container(
             margin: EdgeInsets.all(indicatorSize / 4),
@@ -2013,14 +2072,34 @@ class DefaultAssetPickerBuilderDelegate
   }
 
   @override
-  Widget selectedBackdrop(BuildContext context, int index, AssetEntity asset) {
+  Widget selectedBackdrop(
+    BuildContext context,
+    int index,
+    AssetEntity asset,
+    bool isMultipleSelection,
+  ) {
     final double indicatorSize =
         MediaQuery.sizeOf(context).width / gridCount / 3;
     return Positioned.fill(
       child: GestureDetector(
         onTap: isPreviewEnabled
             ? () {
-                viewAsset(context, index, asset);
+                if (isMultipleSelection) {
+                  viewAsset(context, index, asset);
+                } else {
+                  final DefaultAssetPickerProvider p =
+                      context.read<DefaultAssetPickerProvider>();
+                  final selected = p.selectedAssets
+                      .where((selectAssert) => selectAssert == asset)
+                      .isNotEmpty;
+                  selectAsset(
+                    context,
+                    asset,
+                    index,
+                    selected,
+                    isMultipleSelection,
+                  );
+                }
               }
             : null,
         child: Consumer<DefaultAssetPickerProvider>(
@@ -2030,10 +2109,10 @@ class DefaultAssetPickerBuilderDelegate
             return AnimatedContainer(
               duration: switchingPathDuration,
               padding: EdgeInsets.all(indicatorSize * .35),
-              color: selected
+              color: isMultipleSelection && selected
                   ? theme.colorScheme.primary.withOpacity(.45)
                   : theme.colorScheme.background.withOpacity(.1),
-              child: selected && !isSingleAssetMode
+              child: isMultipleSelection && selected && !isSingleAssetMode
                   ? Align(
                       alignment: AlignmentDirectional.topStart,
                       child: SizedBox(
@@ -2176,9 +2255,9 @@ class DefaultAssetPickerBuilderDelegate
               fit: StackFit.expand,
               children: <Widget>[
                 if (isAppleOS(context))
-                  appleOSLayout(context)
+                  appleOSLayout(context, true)
                 else
-                  androidLayout(context),
+                  androidLayout(context, true),
                 permissionOverlay(context),
               ],
             ),
