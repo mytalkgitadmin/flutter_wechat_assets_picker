@@ -2,7 +2,6 @@
 // Use of this source code is governed by an Apache license that can be found
 // in the LICENSE file.
 
-import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data' as typed_data;
 import 'dart:ui' as ui;
@@ -842,7 +841,6 @@ class DefaultAssetPickerBuilderDelegate
       provider.selectedAssets.clear();
     }
     final AssetEntity entity = asset;
-    final file = await entity.file;
     if ((entity.width >= 10000 && (entity.width / entity.height) > 3) ||
         (entity.height >= 10000 && (entity.height / entity.width) > 3)) {
       // 이미지 길이 또는 높이가 10000 이상이고 비율이 3보다 큰 이미지인 경우 toast message 노출
@@ -1067,7 +1065,8 @@ class DefaultAssetPickerBuilderDelegate
             child: Stack(
               children: <Widget>[
                 Positioned.fill(
-                    child: assetsGridBuilder(context, isMultipleSelection)),
+                  child: assetsGridBuilder(context, isMultipleSelection),
+                ),
                 if (isPreviewEnabled || !isSingleAssetMode)
                   Positioned.fill(top: null, child: bottomActionBar(context)),
               ],
