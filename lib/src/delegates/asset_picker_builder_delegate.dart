@@ -2,6 +2,7 @@
 // Use of this source code is governed by an Apache license that can be found
 // in the LICENSE file.
 
+import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data' as typed_data;
 import 'dart:ui' as ui;
@@ -852,29 +853,30 @@ class DefaultAssetPickerBuilderDelegate
       );
       return;
     }
-    if (file != null) {
-      try {
-        final bytes = await file.readAsBytes();
-        if ((bytes.length / 1000000).roundToDouble() >= 200) {
-          // 200 MB 이상의 파일이 1개라도 있는 경우 1회 toast message 노출
-          AssetToast.show(
-            context,
-            message: Singleton
-                .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
-          );
-        } else {
-          provider.selectAsset(asset);
-          if (isSingleAssetMode && !isPreviewEnabled) {
-            Navigator.maybeOf(context)?.maybePop(provider.selectedAssets);
-          }
-        }
-      } on OutOfMemoryError catch (_) {
-        AssetToast.show(
-          context,
-          message: Singleton
-              .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
-        );
-      }
+    try {
+      provider.selectAsset(asset);
+      // double bytes = 0;
+      // if (Platform.isAndroid) {
+      //   bytes = (await file?.length() ?? 0) / (1024 * 1024);
+      // } else {
+      //   bytes = ((await entity.originBytes)?.length ?? 0) / (1000 * 1000);
+      // }
+      // if (bytes.roundToDouble() >= 200) {
+      //   // 200 MB 이상의 파일이 1개라도 있는 경우 1회 toast message 노출
+      //   AssetToast.show(
+      //     context,
+      //     message: Singleton
+      //         .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
+      //   );
+      // } else {
+      //   provider.selectAsset(asset);
+      // }
+    } on OutOfMemoryError catch (_) {
+      AssetToast.show(
+        context,
+        message:
+            Singleton.textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
+      );
     }
   }
 
