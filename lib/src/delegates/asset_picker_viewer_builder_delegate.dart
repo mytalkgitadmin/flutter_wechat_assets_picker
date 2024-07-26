@@ -279,25 +279,39 @@ abstract class AssetPickerViewerBuilderDelegate<Asset, Path> {
       }
 
       try {
-        final bytes = await file.readAsBytes();
-        if ((bytes.length / 1000000).roundToDouble() >= 200) {
-          // 200 MB 이상의 파일이 1개라도 있는 경우 1회 toast message 노출
-          AssetToast.show(
-            context,
-            message: Singleton
-                .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
-          );
-        } else {
-          if (maxAssets != null && selectedCount >= maxAssets!) {
-            return;
-          }
-          provider?.selectAsset(item);
-          selectorProvider?.selectAsset(item);
-          if (!isSelectedPreviewing) {
-            selectedAssets?.add(item);
-          }
-          selectedNotifier.value = selectedCount;
+        if (maxAssets != null && selectedCount >= maxAssets!) {
+          return;
         }
+        provider?.selectAsset(item);
+        selectorProvider?.selectAsset(item);
+        if (!isSelectedPreviewing) {
+          selectedAssets?.add(item);
+        }
+        selectedNotifier.value = selectedCount;
+        // double bytes = 0;
+        // if (Platform.isAndroid) {
+        //   bytes = await file.length() / (1024 * 1024);
+        // } else {
+        //   bytes = ((await entity.originBytes)?.length ?? 0) / (1000 * 1000);
+        // }
+        // if (bytes.roundToDouble() >= 200) {
+        //   // 200 MB 이상의 파일이 1개라도 있는 경우 1회 toast message 노출
+        //   AssetToast.show(
+        //     context,
+        //     message: Singleton
+        //         .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
+        //   );
+        // } else {
+        //   if (maxAssets != null && selectedCount >= maxAssets!) {
+        //     return;
+        //   }
+        //   provider?.selectAsset(item);
+        //   selectorProvider?.selectAsset(item);
+        //   if (!isSelectedPreviewing) {
+        //     selectedAssets?.add(item);
+        //   }
+        //   selectedNotifier.value = selectedCount;
+        // }
       } on OutOfMemoryError catch (_) {
         AssetToast.show(
           context,

@@ -766,8 +766,13 @@ class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
                 child: isSelected && !isSingleAssetMode
                     ? GestureDetector(
                         behavior: HitTestBehavior.opaque,
-                        onTap: () => selectAsset(context, asset, index,
-                            isSelected, isMultipleSelection),
+                        onTap: () => selectAsset(
+                          context,
+                          asset,
+                          index,
+                          isSelected,
+                          isMultipleSelection,
+                        ),
                         child: innerSelector,
                       )
                     : innerSelector,

@@ -841,7 +841,6 @@ class DefaultAssetPickerBuilderDelegate
       provider.selectedAssets.clear();
     }
     final AssetEntity entity = asset;
-    final file = await entity.file;
     if ((entity.width >= 10000 && (entity.width / entity.height) > 3) ||
         (entity.height >= 10000 && (entity.height / entity.width) > 3)) {
       // 이미지 길이 또는 높이가 10000 이상이고 비율이 3보다 큰 이미지인 경우 toast message 노출
@@ -852,29 +851,30 @@ class DefaultAssetPickerBuilderDelegate
       );
       return;
     }
-    if (file != null) {
-      try {
-        final bytes = await file.readAsBytes();
-        if ((bytes.length / 1000000).roundToDouble() >= 200) {
-          // 200 MB 이상의 파일이 1개라도 있는 경우 1회 toast message 노출
-          AssetToast.show(
-            context,
-            message: Singleton
-                .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
-          );
-        } else {
-          provider.selectAsset(asset);
-          if (isSingleAssetMode && !isPreviewEnabled) {
-            Navigator.maybeOf(context)?.maybePop(provider.selectedAssets);
-          }
-        }
-      } on OutOfMemoryError catch (_) {
-        AssetToast.show(
-          context,
-          message: Singleton
-              .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
-        );
-      }
+    try {
+      provider.selectAsset(asset);
+      // double bytes = 0;
+      // if (Platform.isAndroid) {
+      //   bytes = (await file?.length() ?? 0) / (1024 * 1024);
+      // } else {
+      //   bytes = ((await entity.originBytes)?.length ?? 0) / (1000 * 1000);
+      // }
+      // if (bytes.roundToDouble() >= 200) {
+      //   // 200 MB 이상의 파일이 1개라도 있는 경우 1회 toast message 노출
+      //   AssetToast.show(
+      //     context,
+      //     message: Singleton
+      //         .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
+      //   );
+      // } else {
+      //   provider.selectAsset(asset);
+      // }
+    } on OutOfMemoryError catch (_) {
+      AssetToast.show(
+        context,
+        message:
+            Singleton.textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
+      );
     }
   }
 
@@ -1065,7 +1065,8 @@ class DefaultAssetPickerBuilderDelegate
             child: Stack(
               children: <Widget>[
                 Positioned.fill(
-                    child: assetsGridBuilder(context, isMultipleSelection)),
+                  child: assetsGridBuilder(context, isMultipleSelection),
+                ),
                 if (isPreviewEnabled || !isSingleAssetMode)
                   Positioned.fill(top: null, child: bottomActionBar(context)),
               ],

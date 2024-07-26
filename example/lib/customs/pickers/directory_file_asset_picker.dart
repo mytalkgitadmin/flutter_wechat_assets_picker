@@ -494,8 +494,11 @@ class FileAssetPickerBuilder
                               child: Column(
                                 children: <Widget>[
                                   Expanded(
-                                      child: assetsGridBuilder(
-                                          context, isMultipleSelection)),
+                                    child: assetsGridBuilder(
+                                      context,
+                                      isMultipleSelection,
+                                    ),
+                                  ),
                                   if (!isAppleOS(context))
                                     bottomActionBar(context),
                                 ],
@@ -550,7 +553,9 @@ class FileAssetPickerBuilder
                               children: <Widget>[
                                 Positioned.fill(
                                   child: assetsGridBuilder(
-                                      context, isMultipleSelection),
+                                    context,
+                                    isMultipleSelection,
+                                  ),
                                 ),
                                 if (!isSingleAssetMode || isAppleOS(context))
                                   PositionedDirectional(
