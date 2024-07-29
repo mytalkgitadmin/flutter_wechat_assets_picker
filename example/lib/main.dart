@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       onGenerateTitle: (context) => context.l10n.appTitle,
       theme: _buildTheme(Brightness.light),
-      darkTheme: _buildTheme(Brightness.dark),
+      darkTheme: _buildTheme(Brightness.light),
       home: const SplashPage(),
       builder: (BuildContext c, Widget? w) {
         return ScrollConfiguration(
