@@ -698,8 +698,8 @@ class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
                       top: -appBarPreferredSize!.height,
                     ),
                   ),
-                  child:
-                      RepaintBoundary(child: assetsGridBuilder(context, true)),
+                  child: RepaintBoundary(
+                      child: assetsGridBuilder(context, true, '')),
                 )
               : loadingIndicator(context),
         );
