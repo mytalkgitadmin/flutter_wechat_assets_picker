@@ -1479,9 +1479,7 @@ class FileAssetPickerViewerBuilderDelegate
     return Theme(
       data: themeData,
       child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: themeData.brightness.reverse == Brightness.dark
-            ? SystemUiOverlayStyle.light
-            : SystemUiOverlayStyle.dark,
+        value: SystemUiOverlayStyle.light,
         child: Builder(
           builder: (BuildContext context) => Material(
             color: Colors.black,
