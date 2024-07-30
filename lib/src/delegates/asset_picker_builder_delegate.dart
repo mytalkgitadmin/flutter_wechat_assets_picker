@@ -312,6 +312,7 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
   Widget assetsGridBuilder(
     BuildContext context,
     bool isMultipleSelection,
+    String requestType,
   );
 
   /// Indicates how would the grid found a reusable [RenderObject] through [id].
@@ -1034,9 +1035,7 @@ class DefaultAssetPickerBuilderDelegate
                           children: <Widget>[
                             Expanded(
                               child: assetsGridBuilder(
-                                context,
-                                isMultipleSelection,
-                              ),
+                                  context, isMultipleSelection, ''),
                             ),
                             if (isPreviewEnabled || !isSingleAssetMode)
                               bottomActionBar(context),
@@ -1065,7 +1064,7 @@ class DefaultAssetPickerBuilderDelegate
             child: Stack(
               children: <Widget>[
                 Positioned.fill(
-                  child: assetsGridBuilder(context, isMultipleSelection),
+                  child: assetsGridBuilder(context, isMultipleSelection, ''),
                 ),
                 if (isPreviewEnabled || !isSingleAssetMode)
                   Positioned.fill(top: null, child: bottomActionBar(context)),
@@ -1141,6 +1140,7 @@ class DefaultAssetPickerBuilderDelegate
   Widget assetsGridBuilder(
     BuildContext context,
     bool isMultipleSelection,
+    String requestType,
   ) {
     appBarPreferredSize ??= appBar(context).preferredSize;
     final bool gridRevert = effectiveShouldRevertGrid(context);
@@ -1261,6 +1261,18 @@ class DefaultAssetPickerBuilderDelegate
                   selector: (_, DefaultAssetPickerProvider p) =>
                       p.currentAssets,
                   builder: (BuildContext context, List<AssetEntity> assets, _) {
+                    List<AssetEntity> typeAssets = [];
+                    if (requestType == 'image') {
+                      typeAssets = assets
+                          .where((asset) => asset.type == AssetType.image)
+                          .toList();
+                    } else if (requestType == 'video') {
+                      typeAssets = assets
+                          .where((asset) => asset.type == AssetType.video)
+                          .toList();
+                    } else {
+                      typeAssets = List.from(assets);
+                    }
                     final SliverGap bottomGap = SliverGap.v(
                       context.bottomPadding + bottomSectionHeight,
                     );
@@ -1271,7 +1283,7 @@ class DefaultAssetPickerBuilderDelegate
                       anchor: gridRevert ? anchor : 0,
                       center: gridRevert ? gridRevertKey : null,
                       slivers: [
-                        sliverGrid(context, assets),
+                        sliverGrid(context, typeAssets),
                         if (gridRevert && anchor == 1) bottomGap,
                         if (gridRevert)
                           SliverToBoxAdapter(

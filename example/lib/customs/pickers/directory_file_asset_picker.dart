@@ -495,9 +495,7 @@ class FileAssetPickerBuilder
                                 children: <Widget>[
                                   Expanded(
                                     child: assetsGridBuilder(
-                                      context,
-                                      isMultipleSelection,
-                                    ),
+                                        context, isMultipleSelection, ''),
                                   ),
                                   if (!isAppleOS(context))
                                     bottomActionBar(context),
@@ -553,9 +551,7 @@ class FileAssetPickerBuilder
                               children: <Widget>[
                                 Positioned.fill(
                                   child: assetsGridBuilder(
-                                    context,
-                                    isMultipleSelection,
-                                  ),
+                                      context, isMultipleSelection, ''),
                                 ),
                                 if (!isSingleAssetMode || isAppleOS(context))
                                   PositionedDirectional(
@@ -606,6 +602,7 @@ class FileAssetPickerBuilder
   Widget assetsGridBuilder(
     BuildContext context,
     bool isMultipleSelection,
+    String requestType,
   ) {
     appBarPreferredSize ??= appBar(context).preferredSize;
     int totalCount = provider.currentAssets.length;
@@ -1482,9 +1479,7 @@ class FileAssetPickerViewerBuilderDelegate
     return Theme(
       data: themeData,
       child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: themeData.brightness.reverse == Brightness.dark
-            ? SystemUiOverlayStyle.light
-            : SystemUiOverlayStyle.dark,
+        value: SystemUiOverlayStyle.light,
         child: Builder(
           builder: (BuildContext context) => Material(
             color: Colors.black,

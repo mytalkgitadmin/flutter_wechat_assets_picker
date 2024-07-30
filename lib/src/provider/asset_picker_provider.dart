@@ -292,7 +292,7 @@ class DefaultAssetPickerProvider
 
   /// Request assets type.
   /// 请求的资源类型
-  final RequestType requestType;
+  RequestType requestType;
 
   /// @{macro wechat_assets_picker.delegates.SortPathDelegate}
   final SortPathDelegate<AssetPathEntity>? sortPathDelegate;
