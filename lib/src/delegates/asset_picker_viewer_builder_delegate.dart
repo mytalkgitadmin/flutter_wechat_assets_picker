@@ -1005,31 +1005,28 @@ class DefaultAssetPickerViewerBuilderDelegate
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
-      child: Theme(
-        data: AssetPicker.themeData(Colors.white),
-        child: Builder(
-          builder: (BuildContext context) => Material(
-            color: Colors.white,
-            child: Stack(
-              children: <Widget>[
-                Positioned.fill(child: _pageViewBuilder(context)),
-                if (isWeChatMoment && hasVideo) ...<Widget>[
-                  momentVideoBackButton(context),
-                  PositionedDirectional(
-                    end: 16,
-                    bottom: context.bottomPadding + 16,
-                    child: confirmButton(context),
-                  ),
-                ] else ...<Widget>[
-                  appBar(context),
-                  if (selectedAssets != null ||
-                      (isWeChatMoment && hasVideo && isAppleOS(context)))
-                    bottomDetailBuilder(context),
-                ],
+    return Theme(
+      data: themeData,
+      child: Builder(
+        builder: (BuildContext context) => Material(
+          color: Colors.white,
+          child: Stack(
+            children: <Widget>[
+              Positioned.fill(child: _pageViewBuilder(context)),
+              if (isWeChatMoment && hasVideo) ...<Widget>[
+                momentVideoBackButton(context),
+                PositionedDirectional(
+                  end: 16,
+                  bottom: context.bottomPadding + 16,
+                  child: confirmButton(context),
+                ),
+              ] else ...<Widget>[
+                appBar(context),
+                if (selectedAssets != null ||
+                    (isWeChatMoment && hasVideo && isAppleOS(context)))
+                  bottomDetailBuilder(context),
               ],
-            ),
+            ],
           ),
         ),
       ),
