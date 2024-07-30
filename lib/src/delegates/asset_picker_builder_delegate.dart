@@ -2097,14 +2097,14 @@ class DefaultAssetPickerBuilderDelegate
       child: GestureDetector(
         onTap: isPreviewEnabled
             ? () {
-                if (isMultipleSelection) {
+                final DefaultAssetPickerProvider p =
+                    context.read<DefaultAssetPickerProvider>();
+                final selected = p.selectedAssets
+                    .where((selectAssert) => selectAssert == asset)
+                    .isNotEmpty;
+                if (isMultipleSelection && false == selected) {
                   viewAsset(context, index, asset);
                 } else {
-                  final DefaultAssetPickerProvider p =
-                      context.read<DefaultAssetPickerProvider>();
-                  final selected = p.selectedAssets
-                      .where((selectAssert) => selectAssert == asset)
-                      .isNotEmpty;
                   selectAsset(
                     context,
                     asset,
@@ -2123,8 +2123,8 @@ class DefaultAssetPickerBuilderDelegate
               duration: switchingPathDuration,
               padding: EdgeInsets.all(indicatorSize * .35),
               color: isMultipleSelection && selected
-                  ? theme.colorScheme.primary.withOpacity(.45)
-                  : theme.colorScheme.background.withOpacity(.1),
+                  ? const Color.fromRGBO(51, 51, 51, 0.3)
+                  : const Color.fromRGBO(170, 170, 170, 0.1),
               child: isMultipleSelection && selected && !isSingleAssetMode
                   ? Align(
                       alignment: AlignmentDirectional.topStart,
@@ -2136,8 +2136,7 @@ class DefaultAssetPickerBuilderDelegate
                           child: Text(
                             '${index + 1}',
                             style: TextStyle(
-                              color: theme.textTheme.bodyLarge?.color
-                                  ?.withOpacity(.75),
+                              color: Colors.black.withOpacity(.75),
                               fontWeight: FontWeight.w600,
                               height: 1,
                             ),

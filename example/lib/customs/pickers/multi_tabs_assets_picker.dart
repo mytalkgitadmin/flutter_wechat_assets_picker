@@ -321,20 +321,14 @@ class MultiTabAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
-      child: Theme(
-        data: theme,
-        child: Builder(
-          builder: (BuildContext context) => Material(
-            color: Colors.transparent,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                pickerViewLayout(context),
-              ],
-            ),
-          ),
+    return Builder(
+      builder: (BuildContext context) => Material(
+        color: Colors.white,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            pickerViewLayout(context),
+          ],
         ),
       ),
     );
