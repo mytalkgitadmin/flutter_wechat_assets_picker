@@ -618,51 +618,59 @@ class DefaultAssetPickerViewerBuilderDelegate
             if (provider != null)
               ValueListenableBuilder<int>(
                 valueListenable: selectedNotifier,
-                builder: (_, int count, __) => Container(
-                  width: count > 0 ? double.maxFinite : 0,
-                  height: bottomPreviewHeight,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(18.0),
-                      topLeft: Radius.circular(18.0),
-                    ),
-                    border: Border(
-                      top: BorderSide(
-                        color: Color.fromRGBO(221, 221, 221, 1),
+                builder: (_, int count, __) {
+                  return Column(
+                    children: [
+                      Container(
+                        width: count > 0 ? double.maxFinite : 0,
+                        height: bottomPreviewHeight,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(18.0),
+                            topLeft: Radius.circular(18.0),
+                          ),
+                          border: Border(
+                            top: BorderSide(
+                              color: Color.fromRGBO(221, 221, 221, 1),
+                            ),
+                          ),
+                          color: backgroundColor,
+                        ),
+                        child: ListView.builder(
+                          controller: previewingListController,
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          physics: const ClampingScrollPhysics(),
+                          itemCount: count,
+                          itemBuilder: bottomDetailItemBuilder,
+                        ),
                       ),
-                    ),
-                    color: backgroundColor,
-                  ),
-                  child: ListView.builder(
-                    controller: previewingListController,
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    physics: const ClampingScrollPhysics(),
-                    itemCount: count,
-                    itemBuilder: bottomDetailItemBuilder,
-                  ),
-                ),
+                      Container(
+                        height: bottomBarHeight + context.bottomPadding,
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0)
+                            .copyWith(bottom: context.bottomPadding),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            top: BorderSide(
+                              color: count == 0
+                                  ? const Color.fromRGBO(221, 221, 221, 1)
+                                  : backgroundColor,
+                            ),
+                          ),
+                          color: backgroundColor,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            if (provider != null || isWeChatMoment)
+                              confirmButton(context),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
-            Container(
-              height: bottomBarHeight + context.bottomPadding,
-              padding: const EdgeInsets.symmetric(horizontal: 20.0)
-                  .copyWith(bottom: context.bottomPadding),
-              decoration: const BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Color.fromRGBO(221, 221, 221, 1),
-                  ),
-                ),
-                color: backgroundColor,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  if (provider != null || isWeChatMoment)
-                    confirmButton(context),
-                ],
-              ),
-            ),
           ],
         ),
       ),
