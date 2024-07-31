@@ -430,7 +430,12 @@ class DefaultAssetPickerViewerBuilderDelegate
     super.maxAssets,
     super.shouldReversePreview,
     super.selectPredicate,
+    this.shouldAutoplayPreview = false,
   });
+
+  /// Whether the preview should auto play.
+  /// 预览是否自动播放
+  final bool shouldAutoplayPreview;
 
   /// Thumb size for the preview of images in the viewer.
   /// 预览时图片的缩略图大小
@@ -461,16 +466,21 @@ class DefaultAssetPickerViewerBuilderDelegate
       shouldReversePreview ? previewAssets.length - index - 1 : index,
     );
     final Widget builder = switch (asset.type) {
-      AssetType.audio => AudioPageBuilder(asset: asset),
+      AssetType.audio => AudioPageBuilder(
+          asset: asset,
+          shouldAutoplayPreview: shouldAutoplayPreview,
+        ),
       AssetType.image => ImagePageBuilder(
           asset: asset,
           delegate: this,
           previewThumbnailSize: previewThumbnailSize,
+          shouldAutoplayPreview: shouldAutoplayPreview,
         ),
       AssetType.video => VideoPageBuilder(
           asset: asset,
           delegate: this,
           hasOnlyOneVideoAndMoment: isWeChatMoment && hasVideo,
+          shouldAutoplayPreview: shouldAutoplayPreview,
         ),
       AssetType.other => Center(
           child: ScaleText(
@@ -608,51 +618,59 @@ class DefaultAssetPickerViewerBuilderDelegate
             if (provider != null)
               ValueListenableBuilder<int>(
                 valueListenable: selectedNotifier,
-                builder: (_, int count, __) => Container(
-                  width: count > 0 ? double.maxFinite : 0,
-                  height: bottomPreviewHeight,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(18.0),
-                      topLeft: Radius.circular(18.0),
-                    ),
-                    border: Border(
-                      top: BorderSide(
-                        color: Color.fromRGBO(221, 221, 221, 1),
+                builder: (_, int count, __) {
+                  return Column(
+                    children: [
+                      Container(
+                        width: count > 0 ? double.maxFinite : 0,
+                        height: bottomPreviewHeight,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(18.0),
+                            topLeft: Radius.circular(18.0),
+                          ),
+                          border: Border(
+                            top: BorderSide(
+                              color: Color.fromRGBO(221, 221, 221, 1),
+                            ),
+                          ),
+                          color: backgroundColor,
+                        ),
+                        child: ListView.builder(
+                          controller: previewingListController,
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          physics: const ClampingScrollPhysics(),
+                          itemCount: count,
+                          itemBuilder: bottomDetailItemBuilder,
+                        ),
                       ),
-                    ),
-                    color: backgroundColor,
-                  ),
-                  child: ListView.builder(
-                    controller: previewingListController,
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    physics: const ClampingScrollPhysics(),
-                    itemCount: count,
-                    itemBuilder: bottomDetailItemBuilder,
-                  ),
-                ),
+                      Container(
+                        height: bottomBarHeight + context.bottomPadding,
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0)
+                            .copyWith(bottom: context.bottomPadding),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            top: BorderSide(
+                              color: count == 0
+                                  ? const Color.fromRGBO(221, 221, 221, 1)
+                                  : backgroundColor,
+                            ),
+                          ),
+                          color: backgroundColor,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            if (provider != null || isWeChatMoment)
+                              confirmButton(context),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
-            Container(
-              height: bottomBarHeight + context.bottomPadding,
-              padding: const EdgeInsets.symmetric(horizontal: 20.0)
-                  .copyWith(bottom: context.bottomPadding),
-              decoration: const BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Color.fromRGBO(221, 221, 221, 1),
-                  ),
-                ),
-                color: backgroundColor,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  if (provider != null || isWeChatMoment)
-                    confirmButton(context),
-                ],
-              ),
-            ),
           ],
         ),
       ),
@@ -877,9 +895,8 @@ class DefaultAssetPickerViewerBuilderDelegate
           }
 
           final bool isButtonEnabled = provider == null ||
-              provider.currentlySelectedAssets.isNotEmpty ||
               previewAssets.isEmpty ||
-              selectedNotifier.value > 0;
+              (selectedAssets?.isNotEmpty ?? false);
 
           return MaterialButton(
             minWidth:
@@ -942,9 +959,24 @@ class DefaultAssetPickerViewerBuilderDelegate
         stream: pageStreamController.stream,
         builder: (_, s) {
           final index = s.data!;
-          final AssetEntity asset = previewAssets.elementAt(
-            shouldReversePreview ? previewAssets.length - index - 1 : index,
-          );
+          final assetIndex =
+              shouldReversePreview ? previewAssets.length - index - 1 : index;
+          if (assetIndex < 0) {
+            throw IndexError.withLength(
+              assetIndex,
+              previewAssets.length,
+              indexable: previewAssets,
+              name: 'selectButton.assetIndex',
+              message: 'previewReversed: $shouldReversePreview\n'
+                  'stream.index: $index\n'
+                  'selectedAssets.length: ${selectedAssets?.length}\n'
+                  'previewAssets.length: ${previewAssets.length}\n'
+                  'currentIndex: $currentIndex\n'
+                  'maxAssets: $maxAssets',
+            );
+          }
+          final asset = previewAssets.elementAt(assetIndex);
+
           return Selector<AssetPickerViewerProvider<AssetEntity>,
               List<AssetEntity>>(
             selector: (_, p) => p.currentlySelectedAssets,
