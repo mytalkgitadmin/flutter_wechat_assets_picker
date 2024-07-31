@@ -1056,7 +1056,7 @@ class DefaultAssetPickerBuilderDelegate
         }
         effectiveIndex = selected.indexOf(currentAsset);
       } else {
-        current = p.currentAssets;
+        current = currentAssets ?? p.currentAssets;
         effectiveIndex = revert ? current.length - index - 1 : index;
       }
     }
@@ -1338,7 +1338,6 @@ class DefaultAssetPickerBuilderDelegate
                       p.currentAssets,
                   builder: (BuildContext context, List<AssetEntity> assets, _) {
                     List<AssetEntity> typeAssets = [];
-                    print('requestType : $requestType');
                     if (requestType == 'image') {
                       typeAssets = assets
                           .where((asset) => asset.type == AssetType.image)
@@ -1583,7 +1582,6 @@ class DefaultAssetPickerBuilderDelegate
     int placeholderCount = 0,
     Widget? specialItem,
   }) {
-    print('assetsGridItemCount');
     final PathWrapper<AssetPathEntity>? currentWrapper = context
         .select<DefaultAssetPickerProvider, PathWrapper<AssetPathEntity>?>(
       (DefaultAssetPickerProvider p) => p.currentPath,
@@ -2177,14 +2175,12 @@ class DefaultAssetPickerBuilderDelegate
       child: GestureDetector(
         onTap: isPreviewEnabled
             ? () {
-                print('isMultipleSelection11');
                 final DefaultAssetPickerProvider p =
                     context.read<DefaultAssetPickerProvider>();
                 final selected = p.selectedAssets
                     .where((selectAssert) => selectAssert == asset)
                     .isNotEmpty;
                 if (isMultipleSelection && false == selected) {
-                  print('isMultipleSelection');
                   viewAsset(context, index, currentAssets, asset);
                 } else {
                   selectAsset(
