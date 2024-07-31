@@ -379,6 +379,7 @@ class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
   Future<void> viewAsset(
     BuildContext context,
     int? index,
+    List<AssetEntity>? currentAssets,
     AssetEntity currentAsset,
   ) async {
     if (index == null) {
@@ -753,7 +754,7 @@ class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
         return Positioned.fill(
           child: GestureDetector(
             onTap: isPreviewEnabled
-                ? () => viewAsset(context, index, asset)
+                ? () => viewAsset(context, index, null, asset)
                 : null,
             child: AnimatedContainer(
               duration: switchingPathDuration,
@@ -787,6 +788,7 @@ class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
   @override
   Widget selectedBackdrop(
     BuildContext context,
+    List<AssetEntity>? currentAssets,
     int index,
     AssetEntity asset,
     bool isMultipleSelection,

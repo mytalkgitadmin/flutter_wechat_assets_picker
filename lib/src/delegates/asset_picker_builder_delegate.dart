@@ -260,7 +260,12 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
 
   /// Determine how to browse assets in the viewer.
   /// 定义如何在查看器中浏览资源
-  Future<void> viewAsset(BuildContext context, int? index, Asset currentAsset);
+  Future<void> viewAsset(
+    BuildContext context,
+    int? index,
+    List<AssetEntity>? currentAssets,
+    Asset currentAsset,
+  );
 
   /// Yes, the build method.
   /// 没错，是它是它就是它，我们亲爱的 build 方法~
@@ -306,6 +311,7 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
   /// 部件选中时的动画遮罩部件
   Widget selectedBackdrop(
     BuildContext context,
+    List<AssetEntity>? currentAssets,
     int index,
     Asset asset,
     bool isMultipleSelection,
@@ -1003,6 +1009,7 @@ class DefaultAssetPickerBuilderDelegate
   Future<void> viewAsset(
     BuildContext context,
     int? index,
+    List<AssetEntity>? currentAssets,
     AssetEntity currentAsset,
   ) async {
     final p = context.read<DefaultAssetPickerProvider>();
@@ -1031,7 +1038,7 @@ class DefaultAssetPickerBuilderDelegate
           current = p.selectedAssets;
           current = current.reversed.toList(growable: false);
         } else {
-          current = p.currentAssets;
+          current = currentAssets ?? p.currentAssets;
         }
         current = current
             .where((AssetEntity e) => e.type == AssetType.image)
@@ -1331,6 +1338,7 @@ class DefaultAssetPickerBuilderDelegate
                       p.currentAssets,
                   builder: (BuildContext context, List<AssetEntity> assets, _) {
                     List<AssetEntity> typeAssets = [];
+                    print('requestType : $requestType');
                     if (requestType == 'image') {
                       typeAssets = assets
                           .where((asset) => asset.type == AssetType.image)
@@ -1440,6 +1448,7 @@ class DefaultAssetPickerBuilderDelegate
         builder,
         selectedBackdrop(
           context,
+          currentAssets,
           currentIndex,
           asset,
           isMultipleSelection,
@@ -1522,7 +1531,7 @@ class DefaultAssetPickerBuilderDelegate
               onTapHint: semanticsTextDelegate.sActionSelectHint,
               onLongPress: isPreviewEnabled
                   ? () {
-                      viewAsset(context, index, asset);
+                      viewAsset(context, index, null, asset);
                     }
                   : null,
               onLongPressHint: semanticsTextDelegate.sActionPreviewHint,
@@ -1537,7 +1546,7 @@ class DefaultAssetPickerBuilderDelegate
                 onLongPress: isPreviewEnabled &&
                         MediaQuery.accessibleNavigationOf(context)
                     ? () {
-                        viewAsset(context, index, asset);
+                        viewAsset(context, index, null, asset);
                       }
                     : null,
                 child: IndexedSemantics(
@@ -1574,6 +1583,7 @@ class DefaultAssetPickerBuilderDelegate
     int placeholderCount = 0,
     Widget? specialItem,
   }) {
+    print('assetsGridItemCount');
     final PathWrapper<AssetPathEntity>? currentWrapper = context
         .select<DefaultAssetPickerProvider, PathWrapper<AssetPathEntity>?>(
       (DefaultAssetPickerProvider p) => p.currentPath,
@@ -2031,7 +2041,7 @@ class DefaultAssetPickerBuilderDelegate
         builder: (context, DefaultAssetPickerProvider p, __) => GestureDetector(
           onTap: p.isSelectedNotEmpty
               ? () {
-                  viewAsset(context, null, p.selectedAssets.first);
+                  viewAsset(context, null, null, p.selectedAssets.first);
                 }
               : null,
           child: Selector<DefaultAssetPickerProvider, String>(
@@ -2156,6 +2166,7 @@ class DefaultAssetPickerBuilderDelegate
   @override
   Widget selectedBackdrop(
     BuildContext context,
+    List<AssetEntity>? currentAssets,
     int index,
     AssetEntity asset,
     bool isMultipleSelection,
@@ -2166,13 +2177,15 @@ class DefaultAssetPickerBuilderDelegate
       child: GestureDetector(
         onTap: isPreviewEnabled
             ? () {
+                print('isMultipleSelection11');
                 final DefaultAssetPickerProvider p =
                     context.read<DefaultAssetPickerProvider>();
                 final selected = p.selectedAssets
                     .where((selectAssert) => selectAssert == asset)
                     .isNotEmpty;
                 if (isMultipleSelection && false == selected) {
-                  viewAsset(context, index, asset);
+                  print('isMultipleSelection');
+                  viewAsset(context, index, currentAssets, asset);
                 } else {
                   selectAsset(
                     context,
