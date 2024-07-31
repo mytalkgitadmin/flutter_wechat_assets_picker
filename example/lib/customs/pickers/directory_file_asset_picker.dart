@@ -382,6 +382,7 @@ class FileAssetPickerBuilder
   Future<void> viewAsset(
     BuildContext context,
     int? index,
+    List<AssetEntity>? currentAssets,
     File currentAsset,
   ) async {
     final List<File>? result =
@@ -1159,6 +1160,7 @@ class FileAssetPickerBuilder
   @override
   Widget selectedBackdrop(
     BuildContext context,
+    List<AssetEntity>? currentAssets,
     int index,
     File asset,
     bool isMultipleSelection,
