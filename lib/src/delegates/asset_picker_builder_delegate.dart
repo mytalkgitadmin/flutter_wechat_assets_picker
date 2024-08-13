@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data' as typed_data;
 import 'dart:ui' as ui;
@@ -868,6 +869,7 @@ class DefaultAssetPickerBuilderDelegate
       provider.selectedAssets.clear();
     }
     final AssetEntity entity = asset;
+    final file = await entity.file;
     if ((entity.width >= 10000 && (entity.width / entity.height) > 3) ||
         (entity.height >= 10000 && (entity.height / entity.width) > 3)) {
       // 이미지 길이 또는 높이가 10000 이상이고 비율이 3보다 큰 이미지인 경우 toast message 노출
@@ -879,23 +881,22 @@ class DefaultAssetPickerBuilderDelegate
       return;
     }
     try {
-      provider.selectAsset(asset);
-      // double bytes = 0;
-      // if (Platform.isAndroid) {
-      //   bytes = (await file?.length() ?? 0) / (1024 * 1024);
-      // } else {
-      //   bytes = ((await entity.originBytes)?.length ?? 0) / (1000 * 1000);
-      // }
-      // if (bytes.roundToDouble() >= 200) {
-      //   // 200 MB 이상의 파일이 1개라도 있는 경우 1회 toast message 노출
-      //   AssetToast.show(
-      //     context,
-      //     message: Singleton
-      //         .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
-      //   );
-      // } else {
-      //   provider.selectAsset(asset);
-      // }
+      int size = 0;
+      if (Platform.isAndroid) {
+        size = file?.readAsBytesSync().length ?? 0;
+      } else {
+        size = (await entity.originBytes)?.length ?? 0;
+      }
+      if ((size / 1000000).roundToDouble() >= 200) {
+        // 200 MB 이상의 파일이 1개라도 있는 경우 1회 toast message 노출
+        AssetToast.show(
+          context,
+          message: Singleton
+              .textDelegate.semanticsTextDelegate.sOver200MBToastMessage,
+        );
+      } else {
+        provider.selectAsset(asset);
+      }
     } on OutOfMemoryError catch (_) {
       AssetToast.show(
         context,
