@@ -2204,10 +2204,11 @@ class DefaultAssetPickerBuilderDelegate
         child: Consumer<DefaultAssetPickerProvider>(
           builder: (_, DefaultAssetPickerProvider p, __) {
             final int index = p.selectedAssets.indexOf(asset);
+            final bool selected = index != -1;
             return AnimatedContainer(
               duration: switchingPathDuration,
               padding: EdgeInsets.all(indicatorSize * .35),
-              color: const Color.fromRGBO(51, 51, 51, 0.3),
+              color: selected ? const Color.fromRGBO(51, 51, 51, 0.3) : null,
               child: const SizedBox.shrink(),
             );
           },
