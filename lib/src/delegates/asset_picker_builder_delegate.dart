@@ -2100,6 +2100,9 @@ class DefaultAssetPickerBuilderDelegate
     return Selector<DefaultAssetPickerProvider, String>(
       selector: (_, DefaultAssetPickerProvider p) => p.selectedDescriptions,
       builder: (BuildContext context, String descriptions, __) {
+        final DefaultAssetPickerProvider p =
+            context.read<DefaultAssetPickerProvider>();
+        final int index = p.selectedAssets.indexOf(asset);
         final bool selected = descriptions.contains(asset.toString());
         final Widget innerSelector = AnimatedContainer(
           duration: duration,
@@ -2121,9 +2124,13 @@ class DefaultAssetPickerBuilderDelegate
               duration: duration,
               reverseDuration: duration,
               child: selected
-                  ? const Icon(
-                      Icons.check,
-                      color: Color.fromRGBO(230, 230, 230, 1),
+                  ? Text(
+                      '${index + 1}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 10,
+                      ),
                     )
                   : const SizedBox.shrink(),
             ),
@@ -2204,26 +2211,7 @@ class DefaultAssetPickerBuilderDelegate
               color: isMultipleSelection && selected
                   ? const Color.fromRGBO(51, 51, 51, 0.3)
                   : const Color.fromRGBO(170, 170, 170, 0.1),
-              child: isMultipleSelection && selected && !isSingleAssetMode
-                  ? Align(
-                      alignment: AlignmentDirectional.topStart,
-                      child: SizedBox(
-                        height: indicatorSize / 2.5,
-                        child: FittedBox(
-                          alignment: AlignmentDirectional.topStart,
-                          fit: BoxFit.cover,
-                          child: Text(
-                            '${index + 1}',
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(.75),
-                              fontWeight: FontWeight.w600,
-                              height: 1,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
+              child: const SizedBox.shrink(),
             );
           },
         ),
