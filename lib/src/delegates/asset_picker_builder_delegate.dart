@@ -2124,14 +2124,19 @@ class DefaultAssetPickerBuilderDelegate
               duration: duration,
               reverseDuration: duration,
               child: selected
-                  ? Text(
-                      '${index + 1}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 10,
-                      ),
-                    )
+                  ? isMultipleSelection
+                      ? Text(
+                          '${index + 1}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 10,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.check,
+                          color: Colors.white,
+                        )
                   : const SizedBox.shrink(),
             ),
           ),
