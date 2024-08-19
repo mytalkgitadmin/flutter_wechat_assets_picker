@@ -2145,7 +2145,7 @@ class DefaultAssetPickerBuilderDelegate
       builder: (BuildContext context, String descriptions, __) {
         final DefaultAssetPickerProvider p =
             context.read<DefaultAssetPickerProvider>();
-        final int index = p.selectedAssets.indexOf(asset);
+        final int assetIndex = p.selectedAssets.indexOf(asset);
         final bool selected = descriptions.contains(asset.toString());
         final Widget innerSelector = AnimatedContainer(
           duration: duration,
@@ -2169,7 +2169,7 @@ class DefaultAssetPickerBuilderDelegate
               child: selected
                   ? isMultipleSelection
                       ? Text(
-                          '${index + 1}',
+                          '${assetIndex + 1}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w500,
@@ -2256,7 +2256,9 @@ class DefaultAssetPickerBuilderDelegate
             return AnimatedContainer(
               duration: switchingPathDuration,
               padding: EdgeInsets.all(indicatorSize * .35),
-              color: selected ? const Color.fromRGBO(51, 51, 51, 0.3) : null,
+              color: selected
+                  ? const Color.fromRGBO(51, 51, 51, 0.3)
+                  : Colors.transparent,
               child: const SizedBox.shrink(),
             );
           },
