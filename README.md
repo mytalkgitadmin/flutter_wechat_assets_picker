@@ -58,7 +58,7 @@ The package is built from these wonderful packages.
 | [extended_image][extended_image pub] | Preview assets with expected behaviors.              |
 | [provider][provider pub]             | Helps to manage the interaction state of the picker. |
 | [video_player][video_player pub]     | Plays videos and audios correspondingly.             |
- 
+
 Their implementation should be relatively stable in the package.
 If you've found any issues related to them when using the picker,
 submit issues to our issue tracker first.
@@ -92,7 +92,8 @@ submit issues to our issue tracker first.
         * [With `dio`](#with-dio)
     * [Custom pickers](#custom-pickers)
   * [Frequently asked question ❔](#frequently-asked-question-)
-    * [Execution failed for task ':photo_manager:compileDebugKotlin'](#execution-failed-for-task-photomanagercompiledebugkotlin)
+    * [Changing the default album name (`Recent` to others)](#changing-the-default-album-name-recent-to-others)
+    * [Execution failed for task ':photo_manager:compileDebugKotlin'](#execution-failed-for-task-photo_managercompiledebugkotlin)
     * [Create `AssetEntity` from `File` or `Uint8List` (rawData)](#create-assetentity-from-file-or-uint8list-rawdata)
     * [Glide warning 'Failed to find GeneratedAppGlideModule'](#glide-warning-failed-to-find-generatedappglidemodule)
   * [Contributors ✨](#contributors-)
@@ -312,7 +313,7 @@ Fields in `AssetPickerConfig`:
 | pathNameBuilder                   | `PathNameBuilder<AssetPathEntity>?`              | Build customized path (album) name with the given path entity.                                 | `null`                      |
 | assetsChangeCallback              | `AssetsChangeCallback<AssetPathEntity>?`         | The callback that will be called when the system notifies assets changes.                      | `null`                      |
 | assetsChangeRefreshPredicate      | `AssetsChangeRefreshPredicate<AssetPathEntity>?` | Whether assets changing should call refresh with the given call and the current selected path. | `null`                      |
-| shouldAutoPlayPreview             | `bool`                               | Whether the preview should auto play.                                                        | `false`                      |
+| shouldAutoPlayPreview             | `bool`                                           | Whether the preview should auto play.                                                          | `false`                     |
 
 - When `maxAssets` equals to `1` (a.k.a. single picking mode),
   use `SpecialPickerType.noPreview` will immediately select asset
@@ -468,6 +469,26 @@ See [Contribute custom implementations][] for more details.
 
 ## Frequently asked question ❔
 
+### Changing the default album name (`Recent` to others)
+
+`Recent` is the fix album name for the ALL assets on Android
+since the all assets' album is not an actual album, it only represents all media data records.
+
+To solve that on Android, use `pathNameBuilder`, for example:
+```dart
+AssetPickerConfig(
+  pathNameBuilder: (AssetPathEntity path) => switch (path) {
+    final p when p.isAll => '最近',
+    // You can apply similar conditions to other common paths.
+    _ => path.name,
+  },
+)
+```
+
+Other albums or albums on other platforms (iOS/macOS) will follow
+the configured system localization and supported localizations.
+`pathNameBuilder` is available for all albums.
+
 ### Execution failed for task ':photo_manager:compileDebugKotlin'
 
 See [photo_manager#561][] for more details.
@@ -482,14 +503,14 @@ with `File` or `Uint8List` object.
 final File file = your_file; // Your `File` object
 final String path = file.path;
 final AssetEntity fileEntity = await PhotoManager.editor.saveImageWithPath(
-  path,
-  title: basename(path),
+path,
+title: basename(path),
 ); // Saved in the device then create an AssetEntity
 
 final Uint8List data = your_data; // Your `Uint8List` object
 final AssetEntity imageEntity = await PhotoManager.editor.saveImage(
-  file.path,
-  title: 'title_with_extension.jpg',
+file.path,
+title: 'title_with_extension.jpg',
 ); // Saved in the device then create an AssetEntity
 ```
 
@@ -499,7 +520,7 @@ Deleting an `AssetEntity` might cause system popups show:
 
 ```dart
 final List<String> result = await PhotoManager.editor.deleteWithIds(
-  <String>[entity.id],
+<String>[entity.id],
 );
 ```
 
