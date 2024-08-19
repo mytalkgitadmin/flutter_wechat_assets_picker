@@ -281,7 +281,7 @@ abstract class AssetPickerViewerBuilderDelegate<Asset, Path> {
       try {
         int size = 0;
         if (Platform.isAndroid) {
-          size = file.readAsBytesSync().length ?? 0;
+          size = file.readAsBytesSync().length;
         } else {
           size = (await entity.originBytes)?.length ?? 0;
         }

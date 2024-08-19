@@ -1127,7 +1127,10 @@ class DefaultAssetPickerBuilderDelegate
                           children: <Widget>[
                             Expanded(
                               child: assetsGridBuilder(
-                                  context, isMultipleSelection, ''),
+                                context,
+                                isMultipleSelection,
+                                '',
+                              ),
                             ),
                             if (isPreviewEnabled || !isSingleAssetMode)
                               bottomActionBar(context),

@@ -700,7 +700,12 @@ class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
                     ),
                   ),
                   child: RepaintBoundary(
-                      child: assetsGridBuilder(context, true, '')),
+                    child: assetsGridBuilder(
+                      context,
+                      true,
+                      '',
+                    ),
+                  ),
                 )
               : loadingIndicator(context),
         );
