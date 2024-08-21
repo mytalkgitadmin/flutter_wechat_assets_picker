@@ -1895,6 +1895,7 @@ class DefaultAssetPickerBuilderDelegate
             isSwitchingPath.value = !isSwitchingPath.value;
           },
           child: SizedBox(
+            width: 200,
             height: appBarItemHeight,
             child: Selector<DefaultAssetPickerProvider,
                 PathWrapper<AssetPathEntity>?>(
@@ -1911,6 +1912,7 @@ class DefaultAssetPickerBuilderDelegate
 
                 return Row(
                   mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (p != null)
                       Flexible(
