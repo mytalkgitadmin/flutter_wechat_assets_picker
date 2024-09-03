@@ -169,6 +169,7 @@ class AssetPickerDelegate {
       pageRouteBuilder?.call(picker) ??
           AssetPickerPageRoute<List<Asset>>(builder: (_) => picker),
     );
+    await PhotoManager.clearFileCache();
     return result;
   }
 
