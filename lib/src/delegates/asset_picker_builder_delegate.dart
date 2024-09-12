@@ -1932,7 +1932,11 @@ class DefaultAssetPickerBuilderDelegate
                           style: const TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.normal,
-                          ).copyWith(color: Colors.black),
+                          ).copyWith(
+                            color: isPrivateMode
+                                ? const Color.fromRGBO(187, 154, 101, 1)
+                                : Colors.black,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -1951,10 +1955,12 @@ class DefaultAssetPickerBuilderDelegate
                       child: w,
                     );
                   },
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_drop_down_sharp,
                     size: 30.0,
-                    color: Colors.black,
+                    color: isPrivateMode
+                        ? const Color.fromRGBO(187, 154, 101, 1)
+                        : Colors.black,
                   ),
                 ),
               ),
@@ -2059,7 +2065,9 @@ class DefaultAssetPickerBuilderDelegate
                         child: Text(
                           displayName,
                           style: DefaultTextStyle.of(context).style.copyWith(
-                                color: Colors.black,
+                                color: isPrivateMode
+                                    ? const Color.fromRGBO(187, 154, 101, 1)
+                                    : Colors.black,
                               ),
                           textAlign: TextAlign.center,
                           maxLines: 1,
