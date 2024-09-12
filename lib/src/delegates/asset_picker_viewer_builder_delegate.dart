@@ -422,11 +422,14 @@ class DefaultAssetPickerViewerBuilderDelegate
     super.shouldReversePreview,
     super.selectPredicate,
     this.shouldAutoplayPreview = false,
+    this.isPrivateMode = false,
   });
 
   /// Whether the preview should auto play.
   /// 预览是否自动播放
   final bool shouldAutoplayPreview;
+
+  final bool isPrivateMode;
 
   /// Thumb size for the preview of images in the viewer.
   /// 预览时图片的缩略图大小
@@ -750,16 +753,24 @@ class DefaultAssetPickerViewerBuilderDelegate
                           duration: kThemeAnimationDuration,
                           curve: Curves.easeInOut,
                           decoration: BoxDecoration(
-                            border: isViewing
+                            border: isPrivateMode && isViewing
                                 ? Border.all(
                                     color:
-                                        const Color.fromRGBO(121, 64, 255, 1),
+                                        const Color.fromRGBO(187, 154, 101, 1),
                                     width: 1,
                                   )
-                                : null,
+                                : false == isPrivateMode && isViewing
+                                    ? Border.all(
+                                        color: const Color.fromRGBO(
+                                            121, 64, 255, 1),
+                                        width: 1,
+                                      )
+                                    : null,
                             color: isSelected
                                 ? null
-                                : const Color.fromRGBO(121, 64, 255, 1),
+                                : isPrivateMode
+                                    ? const Color.fromRGBO(187, 154, 101, 1)
+                                    : const Color.fromRGBO(121, 64, 255, 1),
                           ),
                         ),
                       ],
@@ -896,7 +907,9 @@ class DefaultAssetPickerViewerBuilderDelegate
                     : 20,
             height: 40,
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            color: const Color.fromRGBO(121, 64, 255, 1),
+            color: isPrivateMode
+                ? const Color.fromRGBO(187, 154, 101, 1)
+                : const Color.fromRGBO(121, 64, 255, 1),
             disabledColor: const Color.fromRGBO(230, 230, 230, 1),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(3),
@@ -927,7 +940,9 @@ class DefaultAssetPickerViewerBuilderDelegate
       scale: 1.4,
       child: Checkbox(
         value: isSelected,
-        activeColor: const Color.fromRGBO(121, 64, 255, 1),
+        activeColor: isPrivateMode
+            ? const Color.fromRGBO(187, 154, 101, 1)
+            : const Color.fromRGBO(121, 64, 255, 1),
         checkColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(999999),

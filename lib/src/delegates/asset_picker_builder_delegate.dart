@@ -1093,6 +1093,7 @@ class DefaultAssetPickerBuilderDelegate
       maxAssets: p.maxAssets,
       shouldReversePreview: revert,
       shouldAutoplayPreview: shouldAutoplayPreview,
+      isPrivateMode: isPrivateMode,
     );
     if (result != null) {
       Navigator.maybeOf(context)?.maybePop(result);
