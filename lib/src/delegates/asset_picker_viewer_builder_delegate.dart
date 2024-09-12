@@ -789,7 +789,8 @@ class DefaultAssetPickerViewerBuilderDelegate
   /// 顶栏部件
   Widget appBar(BuildContext context) {
     final bar = AssetPickerAppBar(
-      backgroundColor: Colors.white,
+      backgroundColor:
+          isPrivateMode ? const Color.fromRGBO(44, 44, 44, 1) : Colors.white,
       height: 52,
       leading: Semantics(
         sortKey: ordinalSortKey(0),
@@ -801,7 +802,9 @@ class DefaultAssetPickerViewerBuilderDelegate
           icon: Icon(
             Icons.close,
             semanticLabel: MaterialLocalizations.of(context).closeButtonTooltip,
-            color: Colors.black,
+            color: isPrivateMode
+                ? const Color.fromRGBO(187, 154, 101, 1)
+                : Colors.black,
           ),
         ),
       ),
@@ -817,7 +820,10 @@ class DefaultAssetPickerViewerBuilderDelegate
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
-                  ).copyWith(color: Colors.black),
+                  ).copyWith(
+                      color: isPrivateMode
+                          ? const Color.fromRGBO(187, 154, 101, 1)
+                          : Colors.black),
                 ),
               ),
             )
@@ -1008,7 +1014,9 @@ class DefaultAssetPickerViewerBuilderDelegate
                         textDelegate.select,
                         style:
                             const TextStyle(fontSize: 17, height: 1.2).copyWith(
-                          color: Colors.black,
+                          color: isPrivateMode
+                              ? const Color.fromRGBO(187, 154, 101, 1)
+                              : Colors.black,
                         ),
                         semanticsLabel: semanticsTextDelegate.select,
                       ),
