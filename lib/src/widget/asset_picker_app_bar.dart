@@ -203,7 +203,7 @@ class AssetPickerAppBar extends StatelessWidget implements PreferredSizeWidget {
     final SystemUiOverlayStyle overlayStyle = appBarTheme.systemOverlayStyle ??
         SystemUiOverlayStyle(
           statusBarColor: effectiveBackgroundColor,
-          systemNavigationBarIconBrightness: Brightness.light,
+          systemNavigationBarIconBrightness: effectiveBrightness,
           statusBarIconBrightness: effectiveBrightness.reverse,
           statusBarBrightness: effectiveBrightness,
         );
