@@ -954,7 +954,10 @@ class DefaultAssetPickerViewerBuilderDelegate
           borderRadius: BorderRadius.circular(999999),
         ),
         side: MaterialStateBorderSide.resolveWith(
-          (states) => const BorderSide(width: 1.0, color: Colors.black26),
+          (states) => BorderSide(
+            width: 1.0,
+            color: isPrivateMode ? Colors.white : Colors.black26,
+          ),
         ),
         onChanged: (_) => onChangingSelected(context, asset, isSelected),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
