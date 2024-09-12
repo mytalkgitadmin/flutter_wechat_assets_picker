@@ -744,6 +744,7 @@ class DefaultAssetPickerBuilderDelegate
     super.themeColor,
     super.textDelegate,
     super.locale,
+    super.isPrivateMode,
     this.gridThumbnailSize = defaultAssetGridPreviewSize,
     this.previewThumbnailSize,
     this.specialPickerType,
