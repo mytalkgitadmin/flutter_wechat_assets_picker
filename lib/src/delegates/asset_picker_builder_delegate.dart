@@ -48,6 +48,7 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
     this.pathNameBuilder,
     this.assetsChangeCallback,
     this.assetsChangeRefreshPredicate,
+    this.isPrivateMode = false,
     Color? themeColor,
     AssetPickerTextDelegate? textDelegate,
     Locale? locale,
@@ -74,6 +75,8 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
   /// Main color for the picker.
   /// 选择器的主题色
   final Color? themeColor;
+
+  final bool isPrivateMode;
 
   /// Theme for the picker.
   /// 选择器的主题
@@ -1159,7 +1162,11 @@ class DefaultAssetPickerBuilderDelegate
             child: Stack(
               children: <Widget>[
                 Positioned.fill(
-                  child: assetsGridBuilder(context, isMultipleSelection, ''),
+                  child: assetsGridBuilder(
+                    context,
+                    isMultipleSelection,
+                    '',
+                  ),
                 ),
                 if (isPreviewEnabled || !isSingleAssetMode)
                   Positioned.fill(top: null, child: bottomActionBar(context)),
@@ -1714,9 +1721,11 @@ class DefaultAssetPickerBuilderDelegate
                   fontSize: 18.0,
                   fontWeight: FontWeight.w400,
                 ).copyWith(
-                  color: active
-                      ? const Color.fromRGBO(121, 64, 255, 1)
-                      : const Color.fromRGBO(230, 230, 230, 1),
+                  color: isPrivateMode && active
+                      ? const Color.fromRGBO(187, 154, 101, 1)
+                      : false == isPrivateMode && active
+                          ? const Color.fromRGBO(121, 64, 255, 1)
+                          : const Color.fromRGBO(230, 230, 230, 1),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -2161,7 +2170,11 @@ class DefaultAssetPickerBuilderDelegate
                     width: indicatorSize / 25,
                   )
                 : null,
-            color: selected ? const Color.fromRGBO(121, 64, 255, 1) : null,
+            color: isPrivateMode && selected
+                ? const Color.fromRGBO(187, 154, 101, 1)
+                : false == isPrivateMode && selected
+                    ? const Color.fromRGBO(121, 64, 255, 1)
+                    : null,
             shape: BoxShape.circle,
           ),
           child: FittedBox(
