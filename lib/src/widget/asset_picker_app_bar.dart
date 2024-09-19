@@ -29,6 +29,7 @@ class AssetPickerAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.blurRadius = 0,
     this.iconTheme,
     this.semanticsBuilder,
+    this.isPrivateMode = false,
   });
 
   /// Title widget. Typically a [Text] widget.
@@ -84,6 +85,8 @@ class AssetPickerAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Brightness? brightness;
 
   final IconThemeData? iconTheme;
+
+  final bool isPrivateMode;
 
   final Semantics Function(Widget appBar)? semanticsBuilder;
 
@@ -200,13 +203,19 @@ class AssetPickerAppBar extends StatelessWidget implements PreferredSizeWidget {
     final Brightness effectiveBrightness = brightness ??
         appBarTheme.systemOverlayStyle?.statusBarBrightness ??
         theme.brightness;
-    final SystemUiOverlayStyle overlayStyle = appBarTheme.systemOverlayStyle ??
+    SystemUiOverlayStyle overlayStyle = appBarTheme.systemOverlayStyle ??
         SystemUiOverlayStyle(
           statusBarColor: effectiveBackgroundColor,
           systemNavigationBarIconBrightness: effectiveBrightness,
           statusBarIconBrightness: effectiveBrightness.reverse,
           statusBarBrightness: effectiveBrightness,
         );
+    if (isPrivateMode) {
+      overlayStyle = SystemUiOverlayStyle.light.copyWith(
+        systemNavigationBarColor:
+        const Color.fromRGBO(44, 44, 44, 1),
+      );
+    }
     child = AnnotatedRegion<SystemUiOverlayStyle>(
       value: overlayStyle,
       child: child,
@@ -236,13 +245,31 @@ class AssetPickerAppBar extends StatelessWidget implements PreferredSizeWidget {
 class AssetPickerAppBarWrapper extends StatelessWidget {
   const AssetPickerAppBarWrapper({
     super.key,
+    required this.appBar,
     required this.body,
   });
 
+  final AssetPickerAppBar appBar;
   final Widget body;
 
   @override
   Widget build(BuildContext context) {
-    return body;
+    return Material(
+      type: MaterialType.transparency,
+      child: Stack(
+        children: <Widget>[
+          Positioned.fill(
+            top:
+                MediaQuery.paddingOf(context).top + appBar.preferredSize.height,
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: body,
+            ),
+          ),
+          Positioned.fill(bottom: null, child: appBar),
+        ],
+      ),
+    );
   }
 }

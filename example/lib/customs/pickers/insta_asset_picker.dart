@@ -604,6 +604,7 @@ class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
                   width: MediaQuery.sizeOf(context).width,
                   height: topWidgetHeight,
                   child: AssetPickerAppBarWrapper(
+                    appBar: appBar(context),
                     body: DecoratedBox(
                       decoration: BoxDecoration(
                         color: pickerTheme?.canvasColor,

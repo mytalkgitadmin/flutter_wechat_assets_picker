@@ -303,6 +303,7 @@ class MultiTabAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
 
   Widget pickerViewLayout(BuildContext context) {
     return AssetPickerAppBarWrapper(
+      appBar: appBar(context),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,12 +322,19 @@ class MultiTabAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light
-          .copyWith(statusBarColor: Color.fromRGBO(44, 44, 44, 1)),
-      child: SafeArea(
-        child: Scaffold(
-          appBar: appBar(context),
-          body: pickerViewLayout(context),
+      value: overlayStyle,
+      child: Theme(
+        data: theme,
+        child: Builder(
+          builder: (BuildContext context) => Material(
+            color: theme.canvasColor,
+            child: Stack(
+              fit: StackFit.expand,
+              children: <Widget>[
+                pickerViewLayout(context),
+              ],
+            ),
+          ),
         ),
       ),
     );

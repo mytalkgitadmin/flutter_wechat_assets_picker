@@ -1118,6 +1118,7 @@ class DefaultAssetPickerBuilderDelegate
   @override
   Widget androidLayout(BuildContext context, bool isMultipleSelection) {
     return AssetPickerAppBarWrapper(
+      appBar: appBar(context),
       body: Consumer<DefaultAssetPickerProvider>(
         builder: (BuildContext context, DefaultAssetPickerProvider p, _) {
           final bool shouldDisplayAssets =
