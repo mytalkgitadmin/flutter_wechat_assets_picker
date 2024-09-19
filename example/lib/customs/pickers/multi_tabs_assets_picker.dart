@@ -3,12 +3,13 @@
 // in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
 import '../../constants/extensions.dart';
 
-const Color _themeColor = Color(0xfff2223a);
+const Color _themeColor = Colors.black;
 
 class MultiTabAssetPicker extends StatefulWidget {
   const MultiTabAssetPicker({super.key});
@@ -302,7 +303,6 @@ class MultiTabAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
 
   Widget pickerViewLayout(BuildContext context) {
     return AssetPickerAppBarWrapper(
-      appBar: appBar(context),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,14 +320,13 @@ class MultiTabAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
 
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (BuildContext context) => Material(
-        color: Colors.white,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            pickerViewLayout(context),
-          ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light
+          .copyWith(statusBarColor: Color.fromRGBO(44, 44, 44, 1)),
+      child: SafeArea(
+        child: Scaffold(
+          appBar: appBar(context),
+          body: pickerViewLayout(context),
         ),
       ),
     );

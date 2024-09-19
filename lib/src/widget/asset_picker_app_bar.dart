@@ -236,31 +236,13 @@ class AssetPickerAppBar extends StatelessWidget implements PreferredSizeWidget {
 class AssetPickerAppBarWrapper extends StatelessWidget {
   const AssetPickerAppBarWrapper({
     super.key,
-    required this.appBar,
     required this.body,
   });
 
-  final AssetPickerAppBar appBar;
   final Widget body;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      type: MaterialType.transparency,
-      child: Stack(
-        children: <Widget>[
-          Positioned.fill(
-            top:
-                MediaQuery.paddingOf(context).top + appBar.preferredSize.height,
-            child: MediaQuery.removePadding(
-              context: context,
-              removeTop: true,
-              child: body,
-            ),
-          ),
-          Positioned.fill(bottom: null, child: appBar),
-        ],
-      ),
-    );
+    return body;
   }
 }

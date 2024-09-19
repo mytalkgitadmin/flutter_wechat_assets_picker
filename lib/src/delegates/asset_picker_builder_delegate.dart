@@ -1103,6 +1103,7 @@ class DefaultAssetPickerBuilderDelegate
   @override
   AssetPickerAppBar appBar(BuildContext context) {
     final AssetPickerAppBar appBar = AssetPickerAppBar(
+      backgroundColor: Color.fromRGBO(44, 44, 44, 1),
       title: Semantics(
         onTapHint: semanticsTextDelegate.sActionSwitchPathLabel,
         child: pathEntitySelector(context),
@@ -1117,7 +1118,6 @@ class DefaultAssetPickerBuilderDelegate
   @override
   Widget androidLayout(BuildContext context, bool isMultipleSelection) {
     return AssetPickerAppBarWrapper(
-      appBar: appBar(context),
       body: Consumer<DefaultAssetPickerProvider>(
         builder: (BuildContext context, DefaultAssetPickerProvider p, _) {
           final bool shouldDisplayAssets =
