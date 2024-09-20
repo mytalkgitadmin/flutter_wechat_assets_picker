@@ -203,23 +203,29 @@ class AssetPickerAppBar extends StatelessWidget implements PreferredSizeWidget {
     final Brightness effectiveBrightness = brightness ??
         appBarTheme.systemOverlayStyle?.statusBarBrightness ??
         theme.brightness;
-    SystemUiOverlayStyle overlayStyle = appBarTheme.systemOverlayStyle ??
-        SystemUiOverlayStyle(
-          statusBarColor: effectiveBackgroundColor,
-          systemNavigationBarIconBrightness: effectiveBrightness,
-          statusBarIconBrightness: effectiveBrightness.reverse,
-          statusBarBrightness: effectiveBrightness,
-        );
+
     if (isPrivateMode) {
-      overlayStyle = SystemUiOverlayStyle.light.copyWith(
-        systemNavigationBarColor:
-        const Color.fromRGBO(44, 44, 44, 1),
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+        ),
+      );
+    } else {
+      final SystemUiOverlayStyle overlayStyle =
+          appBarTheme.systemOverlayStyle ??
+              SystemUiOverlayStyle(
+                statusBarColor: effectiveBackgroundColor,
+                systemNavigationBarIconBrightness: effectiveBrightness,
+                statusBarIconBrightness: effectiveBrightness.reverse,
+                statusBarBrightness: effectiveBrightness,
+              );
+
+      child = AnnotatedRegion<SystemUiOverlayStyle>(
+        value: overlayStyle,
+        child: child,
       );
     }
-    child = AnnotatedRegion<SystemUiOverlayStyle>(
-      value: overlayStyle,
-      child: child,
-    );
 
     final Widget result = Material(
       // Wrap to ensure the child rendered correctly.

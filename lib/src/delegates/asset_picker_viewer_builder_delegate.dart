@@ -791,6 +791,7 @@ class DefaultAssetPickerViewerBuilderDelegate
     final bar = AssetPickerAppBar(
       backgroundColor:
           isPrivateMode ? const Color.fromRGBO(44, 44, 44, 1) : Colors.white,
+      isPrivateMode: isPrivateMode,
       height: 52,
       leading: Semantics(
         sortKey: ordinalSortKey(0),

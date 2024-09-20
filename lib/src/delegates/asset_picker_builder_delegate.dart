@@ -1103,7 +1103,7 @@ class DefaultAssetPickerBuilderDelegate
   @override
   AssetPickerAppBar appBar(BuildContext context) {
     final AssetPickerAppBar appBar = AssetPickerAppBar(
-      backgroundColor: Color.fromRGBO(44, 44, 44, 1),
+      backgroundColor: const Color.fromRGBO(44, 44, 44, 1),
       title: Semantics(
         onTapHint: semanticsTextDelegate.sActionSwitchPathLabel,
         child: pathEntitySelector(context),
