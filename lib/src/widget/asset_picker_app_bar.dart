@@ -208,8 +208,8 @@ class AssetPickerAppBar extends StatelessWidget implements PreferredSizeWidget {
       SystemChrome.setSystemUIOverlayStyle(
         const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: Brightness.light,
           statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
         ),
       );
     } else {
