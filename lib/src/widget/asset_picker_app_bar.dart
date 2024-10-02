@@ -2,6 +2,7 @@
 // Use of this source code is governed by an Apache license that can be found
 // in the LICENSE file.
 
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -204,7 +205,7 @@ class AssetPickerAppBar extends StatelessWidget implements PreferredSizeWidget {
         appBarTheme.systemOverlayStyle?.statusBarBrightness ??
         theme.brightness;
 
-    if (isPrivateMode) {
+    if (isPrivateMode && Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(
         const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
