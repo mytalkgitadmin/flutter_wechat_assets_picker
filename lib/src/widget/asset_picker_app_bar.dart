@@ -209,6 +209,7 @@ class AssetPickerAppBar extends StatelessWidget implements PreferredSizeWidget {
         const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
         ),
       );
     } else {
