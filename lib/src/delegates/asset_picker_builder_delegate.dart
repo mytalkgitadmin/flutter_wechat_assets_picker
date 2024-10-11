@@ -810,7 +810,7 @@ class DefaultAssetPickerBuilderDelegate
 
   /// [Duration] when triggering path switching.
   /// 切换路径时的动画时长
-  Duration get switchingPathDuration => const Duration(milliseconds: 300);
+  Duration get switchingPathDuration => Duration.zero;
 
   /// [Curve] when triggering path switching.
   /// 切换路径时的动画曲线
@@ -2163,7 +2163,7 @@ class DefaultAssetPickerBuilderDelegate
   ) {
     final double indicatorSize =
         MediaQuery.sizeOf(context).width / gridCount / 3;
-    final Duration duration = switchingPathDuration * 0.75;
+    final Duration duration = switchingPathDuration;
     return Selector<DefaultAssetPickerProvider, String>(
       selector: (_, DefaultAssetPickerProvider p) => p.selectedDescriptions,
       builder: (BuildContext context, String descriptions, __) {
