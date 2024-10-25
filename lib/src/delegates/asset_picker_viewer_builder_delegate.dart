@@ -756,7 +756,7 @@ class DefaultAssetPickerViewerBuilderDelegate
                             border: isPrivateMode && isViewing
                                 ? Border.all(
                                     color:
-                                        const Color.fromRGBO(187, 154, 101, 1),
+                                        const Color.fromRGBO(99, 106, 121, 1),
                                     width: 1,
                                   )
                                 : false == isPrivateMode && isViewing
@@ -769,7 +769,7 @@ class DefaultAssetPickerViewerBuilderDelegate
                             color: isSelected
                                 ? null
                                 : isPrivateMode
-                                    ? const Color.fromRGBO(187, 154, 101, 1)
+                                    ? const Color.fromRGBO(99, 106, 121, 1)
                                     : const Color.fromRGBO(121, 64, 255, 1),
                           ),
                         ),
@@ -790,7 +790,7 @@ class DefaultAssetPickerViewerBuilderDelegate
   Widget appBar(BuildContext context) {
     final bar = AssetPickerAppBar(
       backgroundColor:
-          isPrivateMode ? const Color.fromRGBO(44, 44, 44, 1) : Colors.white,
+          isPrivateMode ? const Color.fromRGBO(28, 30, 34, 1) : Colors.white,
       isPrivateMode: isPrivateMode,
       height: 52,
       leading: Semantics(
@@ -803,9 +803,7 @@ class DefaultAssetPickerViewerBuilderDelegate
           icon: Icon(
             Icons.close,
             semanticLabel: MaterialLocalizations.of(context).closeButtonTooltip,
-            color: isPrivateMode
-                ? const Color.fromRGBO(187, 154, 101, 1)
-                : Colors.black,
+            color: isPrivateMode ? Colors.white : Colors.black,
           ),
         ),
       ),
@@ -822,9 +820,7 @@ class DefaultAssetPickerViewerBuilderDelegate
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
                   ).copyWith(
-                      color: isPrivateMode
-                          ? const Color.fromRGBO(187, 154, 101, 1)
-                          : Colors.black),
+                      color: isPrivateMode ? Colors.white : Colors.black),
                 ),
               ),
             )
@@ -915,7 +911,7 @@ class DefaultAssetPickerViewerBuilderDelegate
             height: 40,
             padding: const EdgeInsets.symmetric(horizontal: 12),
             color: isPrivateMode
-                ? const Color.fromRGBO(187, 154, 101, 1)
+                ? const Color.fromRGBO(99, 106, 121, 1)
                 : const Color.fromRGBO(121, 64, 255, 1),
             disabledColor: const Color.fromRGBO(230, 230, 230, 1),
             shape: RoundedRectangleBorder(
@@ -948,7 +944,7 @@ class DefaultAssetPickerViewerBuilderDelegate
       child: Checkbox(
         value: isSelected,
         activeColor: isPrivateMode
-            ? const Color.fromRGBO(187, 154, 101, 1)
+            ? const Color.fromRGBO(99, 106, 121, 1)
             : const Color.fromRGBO(121, 64, 255, 1),
         checkColor: Colors.white,
         shape: RoundedRectangleBorder(
@@ -1018,9 +1014,7 @@ class DefaultAssetPickerViewerBuilderDelegate
                         textDelegate.select,
                         style:
                             const TextStyle(fontSize: 17, height: 1.2).copyWith(
-                          color: isPrivateMode
-                              ? const Color.fromRGBO(187, 154, 101, 1)
-                              : Colors.black,
+                          color: isPrivateMode ? Colors.white : Colors.black,
                         ),
                         semanticsLabel: semanticsTextDelegate.select,
                       ),

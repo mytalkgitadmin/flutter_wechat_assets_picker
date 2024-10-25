@@ -1725,7 +1725,7 @@ class DefaultAssetPickerBuilderDelegate
                   fontWeight: FontWeight.w400,
                 ).copyWith(
                   color: isPrivateMode && active
-                      ? const Color.fromRGBO(187, 154, 101, 1)
+                      ? const Color.fromRGBO(99, 106, 121, 1)
                       : false == isPrivateMode && active
                           ? const Color.fromRGBO(121, 64, 255, 1)
                           : const Color.fromRGBO(230, 230, 230, 1),
@@ -1936,9 +1936,7 @@ class DefaultAssetPickerBuilderDelegate
                             fontSize: 18.0,
                             fontWeight: FontWeight.normal,
                           ).copyWith(
-                            color: isPrivateMode
-                                ? const Color.fromRGBO(187, 154, 101, 1)
-                                : Colors.black,
+                            color: isPrivateMode ? Colors.white : Colors.black,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -1961,9 +1959,7 @@ class DefaultAssetPickerBuilderDelegate
                   child: Icon(
                     Icons.arrow_drop_down_sharp,
                     size: 30.0,
-                    color: isPrivateMode
-                        ? const Color.fromRGBO(187, 154, 101, 1)
-                        : Colors.black,
+                    color: isPrivateMode ? Colors.white : Colors.black,
                   ),
                 ),
               ),
@@ -2068,9 +2064,8 @@ class DefaultAssetPickerBuilderDelegate
                         child: Text(
                           displayName,
                           style: DefaultTextStyle.of(context).style.copyWith(
-                                color: isPrivateMode
-                                    ? const Color.fromRGBO(187, 154, 101, 1)
-                                    : Colors.black,
+                                color:
+                                    isPrivateMode ? Colors.white : Colors.black,
                               ),
                           textAlign: TextAlign.center,
                           maxLines: 1,
@@ -2184,7 +2179,7 @@ class DefaultAssetPickerBuilderDelegate
                   )
                 : null,
             color: isPrivateMode && selected
-                ? const Color.fromRGBO(187, 154, 101, 1)
+                ? const Color.fromRGBO(99, 106, 121, 1)
                 : false == isPrivateMode && selected
                     ? const Color.fromRGBO(121, 64, 255, 1)
                     : null,
