@@ -1873,7 +1873,7 @@ class DefaultAssetPickerBuilderDelegate
             return Container(
               width: double.infinity,
               color: isPrivateMode
-                  ? const Color.fromRGBO(44, 44, 44, 1)
+                  ? const Color.fromRGBO(28, 30, 34, 1)
                   : Colors.white,
               child: SingleChildScrollView(
                 controller: ScrollController(),
