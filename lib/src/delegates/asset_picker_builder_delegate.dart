@@ -1725,10 +1725,12 @@ class DefaultAssetPickerBuilderDelegate
                   fontWeight: FontWeight.w400,
                 ).copyWith(
                   color: isPrivateMode && active
-                      ? const Color.fromRGBO(99, 106, 121, 1)
-                      : false == isPrivateMode && active
-                          ? const Color.fromRGBO(121, 64, 255, 1)
-                          : const Color.fromRGBO(230, 230, 230, 1),
+                      ? const Color.fromRGBO(230, 230, 230, 1)
+                      : isPrivateMode && false == active
+                          ? const Color.fromRGBO(99, 106, 121, 1)
+                          : false == isPrivateMode && active
+                              ? const Color.fromRGBO(121, 64, 255, 1)
+                              : const Color.fromRGBO(230, 230, 230, 1),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
