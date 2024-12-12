@@ -484,14 +484,9 @@ class DefaultAssetPickerProvider
       if (asset.type != AssetType.image && asset.type != AssetType.video) {
         return null;
       }
-      final thumbnailByte = await asset.thumbnailData;
-      final originByte = await asset.originBytes;
       final Uint8List? data = await asset.thumbnailDataWithSize(
         pathThumbnailSize,
         quality: 10,
-      );
-      print(
-        'originByte : ${originByte?.length} / thumbnailByte : ${thumbnailByte?.length} / thumbnailDataWithSize : ${data?.length}',
       );
       final int index = _paths.indexWhere(
         (PathWrapper<AssetPathEntity> p) => p.path == path.path,
