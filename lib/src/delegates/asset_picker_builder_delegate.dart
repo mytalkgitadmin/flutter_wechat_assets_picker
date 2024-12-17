@@ -904,7 +904,8 @@ class DefaultAssetPickerBuilderDelegate
       } else {
         provider.selectAsset(asset);
       }
-    } on OutOfMemoryError catch (_) {
+    } catch (e) {
+      print('Exception : ${e.toString()}');
       AssetToast.show(
         context,
         message:

@@ -303,7 +303,8 @@ abstract class AssetPickerViewerBuilderDelegate<Asset, Path> {
           }
           selectedNotifier.value = selectedCount;
         }
-      } on OutOfMemoryError catch (_) {
+      } catch (e) {
+        print('Exception : ${e.toString()}');
         AssetToast.show(
           context,
           message: Singleton
