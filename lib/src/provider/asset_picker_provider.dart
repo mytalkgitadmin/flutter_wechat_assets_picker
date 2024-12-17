@@ -486,7 +486,6 @@ class DefaultAssetPickerProvider
       }
       final Uint8List? data = await asset.thumbnailDataWithSize(
         pathThumbnailSize,
-        quality: 10,
       );
       final int index = _paths.indexWhere(
         (PathWrapper<AssetPathEntity> p) => p.path == path.path,

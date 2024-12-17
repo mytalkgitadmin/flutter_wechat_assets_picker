@@ -1463,7 +1463,8 @@ class DefaultAssetPickerBuilderDelegate
       }
     }
 
-    final AssetEntity asset = currentAssets.elementAt(currentIndex);
+    final AssetEntity asset =
+        resizeAsset(currentAssets.elementAt(currentIndex));
     final Widget builder = switch (asset.type) {
       AssetType.image ||
       AssetType.video =>
@@ -1501,6 +1502,36 @@ class DefaultAssetPickerBuilderDelegate
       return index + 1;
     }
     return index;
+  }
+
+  AssetEntity resizeAsset(AssetEntity asset) {
+    AssetEntity resizeAsset = asset;
+    int width = 0;
+    int height = 0;
+    if (asset.width > asset.height) {
+      // 가로 사진
+      if (asset.width > 1280) {
+        width = 1280;
+        height = (width * (asset.height / asset.width)).round();
+      }
+    } else if (asset.width < asset.height) {
+      // 세로 사진
+      if (asset.height > 1280) {
+        height = 1280;
+        width = (height * (asset.width / asset.height)).round();
+      }
+    } else {
+      // 정사각형 사진
+      if (asset.height > 1280 && asset.width > 1280) {
+        width = 1280;
+        height = 1280;
+      }
+    }
+    resizeAsset = asset.copyWith(
+      width: width,
+      height: height,
+    );
+    return resizeAsset;
   }
 
   @override
@@ -1754,6 +1785,7 @@ class DefaultAssetPickerBuilderDelegate
     int index,
     AssetEntity asset,
   ) {
+    print('image : ${asset.width} / ${asset.height}');
     return LocallyAvailableBuilder(
       asset: asset,
       builder: (context, asset) {
