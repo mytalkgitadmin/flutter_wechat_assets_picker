@@ -1785,7 +1785,6 @@ class DefaultAssetPickerBuilderDelegate
     int index,
     AssetEntity asset,
   ) {
-    print('image : ${asset.width} / ${asset.height}');
     return LocallyAvailableBuilder(
       asset: asset,
       builder: (context, asset) {
