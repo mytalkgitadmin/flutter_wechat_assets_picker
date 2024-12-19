@@ -2293,17 +2293,13 @@ class DefaultAssetPickerBuilderDelegate
                 final selected = p.selectedAssets
                     .where((selectAssert) => selectAssert == asset)
                     .isNotEmpty;
-                if (isMultipleSelection && false == selected) {
-                  viewAsset(context, index, currentAssets, asset);
-                } else {
-                  selectAsset(
-                    context,
-                    asset,
-                    index,
-                    selected,
-                    isMultipleSelection,
-                  );
-                }
+                selectAsset(
+                  context,
+                  asset,
+                  index,
+                  selected,
+                  isMultipleSelection,
+                );
               }
             : null,
         child: Consumer<DefaultAssetPickerProvider>(
