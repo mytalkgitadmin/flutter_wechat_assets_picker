@@ -1506,34 +1506,25 @@ class DefaultAssetPickerBuilderDelegate
 
   AssetEntity resizeAsset(AssetEntity asset) {
     AssetEntity resizeAsset = asset;
-    int width = 0;
-    int height = 0;
+    int width = asset.width;
+    int height = asset.height;
     if (asset.width > asset.height) {
       // 가로 사진
       if (asset.width > 1280) {
         width = 1280;
         height = (width * (asset.height / asset.width)).round();
-      } else {
-        width = asset.width;
-        height = asset.height;
       }
     } else if (asset.width < asset.height) {
       // 세로 사진
       if (asset.height > 1280) {
         height = 1280;
         width = (height * (asset.width / asset.height)).round();
-      } else {
-        width = asset.width;
-        height = asset.height;
       }
     } else {
       // 정사각형 사진
       if (asset.height > 1280 && asset.width > 1280) {
         width = 1280;
         height = 1280;
-      } else {
-        width = asset.width;
-        height = asset.height;
       }
     }
     resizeAsset = asset.copyWith(
