@@ -1508,21 +1508,21 @@ class DefaultAssetPickerBuilderDelegate
     AssetEntity resizeAsset = asset;
     int width = asset.width;
     int height = asset.height;
-    if (asset.width > asset.height) {
+    if (width > height) {
       // 가로 사진
-      if (asset.width > 1280) {
+      if (width > 1280) {
         width = 1280;
         height = (width * (asset.height / asset.width)).round();
       }
-    } else if (asset.width < asset.height) {
+    } else if (width < height) {
       // 세로 사진
-      if (asset.height > 1280) {
+      if (height > 1280) {
         height = 1280;
         width = (height * (asset.width / asset.height)).round();
       }
     } else {
       // 정사각형 사진
-      if (asset.height > 1280 && asset.width > 1280) {
+      if (height > 1280 && width > 1280) {
         width = 1280;
         height = 1280;
       }
