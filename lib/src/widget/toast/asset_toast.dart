@@ -63,7 +63,7 @@ void showToast(
   fToast.showToast(
     child: toast,
     toastDuration: (toastLength ?? ToastLength.short).duration,
-    positionedToastBuilder: (context, child) {
+    positionedToastBuilder: (context, child, gravity) {
       return Positioned(
         bottom: MediaQuery.of(context).viewInsets.bottom + 50.0,
         left: 0.0,
